@@ -1,0 +1,6 @@
+project = crashpad-tests
+
+using version
+using config
+using test
+using dist

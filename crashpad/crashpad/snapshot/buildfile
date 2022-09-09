@@ -1,0 +1,242 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+
+include ../client/
+include ../compat/
+include ../minidump/
+include ../util/
+include ../build/
+
+intf_libs += ../build/lib{build}
+impl_libs += ../util/lib{util}
+
+snapshot_impl_libs += ../client/lib{client_common}
+snapshot_impl_libs += ../compat/lib{compat}
+snapshot_impl_libs += ../minidump/lib{format}
+snapshot_impl_libs += ../util/lib{util}
+
+context_common_headers  = cpu_architecture \
+                          cpu_context
+                 
+context_common_source   = cpu_context
+
+#TODO Figure out what mac_universal is?, x86/cpuid_reader should only be included for mac_universal...
+
+snapshot_common_headers = annotation_snapshot \
+                          capture_memory \
+                          crashpad_info_client_options \
+                          exception_snapshot \
+                          handle_snapshot \
+                          memory_snapshot \
+                          memory_snapshot_generic \
+                          minidump/exception_snapshot_minidump \
+                          minidump/memory_snapshot_minidump \
+                          minidump/minidump_annotation_reader \
+                          minidump/minidump_context_converter \
+                          minidump/minidump_simple_string_dictionary_reader \
+                          minidump/minidump_stream \
+                          minidump/minidump_string_list_reader \
+                          minidump/minidump_string_reader \
+                          minidump/module_snapshot_minidump \
+                          minidump/process_snapshot_minidump \
+                          minidump/system_snapshot_minidump \
+                          minidump/thread_snapshot_minidump \
+                          module_snapshot \
+                          process_snapshot \
+                          snapshot_constants \
+                          system_snapshot \
+                          thread_snapshot \
+                          unloaded_module_snapshot \
+                          x86/cpuid_reader \
+                          memory_map_region_snapshot
+
+snapshot_common_source  = annotation_snapshot \
+                          capture_memory \
+                          crashpad_info_client_options \
+                          handle_snapshot \
+                          memory_snapshot \
+                          minidump/exception_snapshot_minidump \
+                          minidump/memory_snapshot_minidump \
+                          minidump/minidump_annotation_reader \
+                          minidump/minidump_context_converter \
+                          minidump/minidump_simple_string_dictionary_reader \
+                          minidump/minidump_string_list_reader \
+                          minidump/minidump_string_reader \
+                          minidump/module_snapshot_minidump \
+                          minidump/process_snapshot_minidump \
+                          minidump/system_snapshot_minidump \
+                          minidump/thread_snapshot_minidump \
+                          unloaded_module_snapshot \
+                          x86/cpuid_reader
+
+snapshot_posix_headers  = posix/timezone
+
+snapshot_posix_source   = posix/timezone
+
+snapshot_macos_headers  = mac/cpu_context_mac \
+                          mac/exception_snapshot_mac \
+                          mac/mach_o_image_annotations_reader \
+                          mac/mach_o_image_reader \
+                          mac/mach_o_image_segment_reader \
+                          mac/mach_o_image_symbol_table_reader \
+                          mac/module_snapshot_mac \
+                          mac/process_reader_mac \
+                          mac/process_snapshot_mac \
+                          mac/process_types \
+                          mac/process_types/flavors \
+                          mac/process_types/internal \
+                          mac/process_types/traits \
+                          mac/system_snapshot_mac \
+                          mac/thread_snapshot_mac \
+                          mac/process_types/flavors \
+                          mac/process_types/internal \
+                          mac/process_types/traits
+
+snapshot_macos_source   = mac/cpu_context_mac \
+                          mac/exception_snapshot_mac \
+                          mac/mach_o_image_annotations_reader \
+                          mac/mach_o_image_reader \
+                          mac/mach_o_image_segment_reader \
+                          mac/mach_o_image_symbol_table_reader \
+                          mac/module_snapshot_mac \
+                          mac/process_reader_mac \
+                          mac/process_snapshot_mac \
+                          mac/process_types \
+                          mac/process_types/custom \
+                          mac/system_snapshot_mac \
+                          mac/thread_snapshot_mac \
+                          mac/process_types/custom
+
+snapshot_macos_files =    mac/process_types/all.proctype \
+                          mac/process_types/annotation.proctype \
+                          mac/process_types/crashpad_info.proctype \
+                          mac/process_types/crashreporterclient.proctype \
+                          mac/process_types/dyld_images.proctype \
+                          mac/process_types/loader.proctype \
+                          mac/process_types/nlist.proctype
+
+snapshot_linux_headers  = linux/capture_memory_delegate_linux \
+                          linux/cpu_context_linux \
+                          linux/debug_rendezvous \
+                          linux/exception_snapshot_linux \
+                          linux/process_reader_linux \
+                          linux/process_snapshot_linux \
+                          linux/signal_context \
+                          linux/system_snapshot_linux \
+                          linux/thread_snapshot_linux \
+                          sanitized/memory_snapshot_sanitized \
+                          sanitized/module_snapshot_sanitized \
+                          sanitized/process_snapshot_sanitized \
+                          sanitized/sanitization_information \
+                          sanitized/thread_snapshot_sanitized \
+                          crashpad_types/crashpad_info_reader \
+                          crashpad_types/image_annotation_reader \
+                          elf/elf_dynamic_array_reader \
+                          elf/elf_image_reader \
+                          elf/elf_symbol_table_reader \
+                          elf/module_snapshot_elf
+
+snapshot_linux_source  = linux/capture_memory_delegate_linux \
+                         linux/cpu_context_linux \
+                         linux/debug_rendezvous \
+                         linux/exception_snapshot_linux \
+                         linux/process_reader_linux \
+                         linux/process_snapshot_linux \
+                         linux/system_snapshot_linux \
+                         linux/thread_snapshot_linux \
+                         sanitized/memory_snapshot_sanitized \
+                         sanitized/module_snapshot_sanitized \
+                         sanitized/process_snapshot_sanitized \
+                         sanitized/sanitization_information \
+                         sanitized/thread_snapshot_sanitized \
+                         crashpad_types/crashpad_info_reader \
+                         crashpad_types/image_annotation_reader \
+                         elf/elf_dynamic_array_reader \
+                         elf/elf_image_reader \
+                         elf/elf_symbol_table_reader \
+                         elf/module_snapshot_elf
+
+snapshot_win_headers   = win/capture_memory_delegate_win \
+                         win/cpu_context_win \
+                         win/exception_snapshot_win \
+                         win/memory_map_region_snapshot_win \
+                         win/module_snapshot_win \
+                         win/pe_image_annotations_reader \
+                         win/pe_image_reader \
+                         win/pe_image_resource_reader \
+                         win/process_reader_win \
+                         win/process_snapshot_win \
+                         win/process_subrange_reader \
+                         win/system_snapshot_win \
+                         win/thread_snapshot_win \
+                         crashpad_types/crashpad_info_reader
+
+snapshot_win_source    = win/capture_memory_delegate_win \
+                         win/cpu_context_win \
+                         win/exception_snapshot_win \
+                         win/memory_map_region_snapshot_win \
+                         win/module_snapshot_win \
+                         win/pe_image_annotations_reader \
+                         win/pe_image_reader \
+                         win/pe_image_resource_reader \
+                         win/process_reader_win \
+                         win/process_snapshot_win \
+                         win/process_subrange_reader \
+                         win/system_snapshot_win \
+                         win/thread_snapshot_win \
+                         crashpad_types/crashpad_info_reader
+
+./: lib{snapshot} lib{context}
+
+lib{context}: {hxx}{$context_common_headers} {cxx}{$context_common_source} $impl_libs $intf_libs
+
+lib{snapshot}: {hxx}{$snapshot_common_headers} {cxx}{$snapshot_common_source}
+lib{snapshot}: {hxx}{$snapshot_posix_headers} {cxx}{$snapshot_posix_source}: include = ($cxx.target.class != 'windows')
+lib{snapshot}: {hxx}{$snapshot_macos_headers} {cxx}{$snapshot_macos_source} {file}{$snapshot_macos_files}: include = ($cxx.target.class == 'macos')
+lib{snapshot}: {hxx}{$snapshot_linux_headers} {cxx}{$snapshot_linux_source}: include = ($cxx.target.class == 'linux')
+lib{snapshot}: {hxx}{$snapshot_win_headers} {cxx}{$snapshot_win_source}: include = ($cxx.target.class == 'windows')
+lib{snapshot}: $impl_libs $intf_libs $snapshot_impl_libs $snapshot_intf_libs lib{context}
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad
+
+switch $cxx.target.class
+{
+  case 'windows'
+  {
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+
+    #TODO Check if powrprof.lib is required to be specifed here.
+    if ($cxx.target.system != 'mingw32')
+    {
+      cxx.libs += powrprof.lib Advapi32.lib
+    }
+  }
+}
+
+# context export options.
+#
+lib{context}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# snapshot export options.
+#
+lib{snapshot}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs $snapshot_intf_libs lib{context}
+}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/snapshot/
+  install.subdirs = true
+}

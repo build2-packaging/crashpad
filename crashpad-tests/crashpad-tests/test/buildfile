@@ -1,0 +1,106 @@
+libs =
+import libs += gtest%lib{gtest}
+import libs += gmock%lib{gmock}
+import libs += mini_chromium%lib{mini_chromium}
+
+import libs += crashpad%lib{util}
+import libs += crashpad%lib{compat}
+
+if ($cxx.target.class == 'macos')
+{
+  import libs += crashpad%lib{snapshot}
+  import libs += crashpad%lib{handler}
+}
+
+common_headers = errors \
+                 file \
+                 filesystem \
+                 gtest_death \
+                 hex_string \
+                 main_arguments \
+                 multiprocess \
+                 multiprocess_exec \
+                 process_type \
+                 scoped_guarded_page \
+                 scoped_module_handle \
+                 scoped_set_thread_name \
+                 scoped_temp_dir \
+                 test_paths
+
+common_source =  errors \
+                 file \
+                 filesystem \
+                 hex_string \
+                 main_arguments \
+                 multiprocess_exec \
+                 process_type \
+                 scoped_module_handle \
+                 scoped_temp_dir \
+                 test_paths
+
+posix_source =   scoped_guarded_page_posix \
+                 scoped_temp_dir_posix \
+                 multiprocess_exec_posix \
+                 multiprocess_posix \
+                 scoped_set_thread_name_posix
+
+mac_header =    mac/mach_errors \
+                mac/dyld \
+                mac/exception_swallower \
+                mac/mach_multiprocess
+
+mac_source =    mac/mach_errors \
+                mac/dyld \
+                mac/exception_swallower \
+                mac/mach_multiprocess
+
+linux_header =  linux/fake_ptrace_connection \
+                linux/get_tls
+
+linux_source =  linux/fake_ptrace_connection \
+                linux/get_tls
+
+win_header =    win/child_launcher \
+                win/win_child_process \
+                win/win_multiprocess \
+                win/win_multiprocess_with_temp_dir
+
+win_source =    multiprocess_exec_win \
+                scoped_guarded_page_win \
+                scoped_set_thread_name_win \
+                scoped_temp_dir_win \
+                win/child_launcher \
+                win/win_child_process \
+                win/win_multiprocess \
+                win/win_multiprocess_with_temp_dir
+
+lib{test}: {hxx}{$common_headers} {cxx}{$common_source}
+lib{test}: {cxx}{$posix_source}: include = ($cxx.target.class != 'windows')
+lib{test}: {hxx}{$mac_header} {cxx}{$mac_source}: include = ($cxx.target.class == 'macos')
+lib{test}: {hxx}{$linux_header} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
+lib{test}: {hxx}{$win_header} {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
+lib{test}: $libs
+
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+
+switch $cxx.target.class
+{
+  case 'macos'
+  {
+    cxx.libs += -lbsm
+  }
+  case 'windows'
+  {
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+  }
+}
+
+cxx.poptions =+ "-I$out_root" "-I$src_root"/crashpad-tests
+
+lib{test}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad-tests
+}

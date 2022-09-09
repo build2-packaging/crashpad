@@ -1,0 +1,1 @@
+../../../upstream/minidump/minidump_user_stream_writer.h

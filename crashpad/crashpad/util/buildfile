@@ -1,0 +1,505 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs += libz%lib{z}
+if ($cxx.target.class == 'linux')
+    import intf_libs += libcurl%lib{curl}
+
+include ../compat/
+include ../build/
+intf_libs += ../compat/lib{compat}
+intf_libs += ../build/lib{build}
+
+import no_cfi_icall_intf_libs += mini_chromium%lib{mini_chromium}
+
+util_common_headers = file/delimited_file_reader \
+                      file/directory_reader \
+                      file/file_helper \
+                      file/file_io \
+                      file/file_reader \
+                      file/file_seeker \
+                      file/file_writer \
+                      file/filesystem \
+                      file/output_stream_file_writer \
+                      file/scoped_remove_file \
+                      file/string_file \
+                      misc/address_sanitizer \
+                      misc/address_types \
+                      misc/arraysize \
+                      misc/as_underlying_type \
+                      misc/capture_context \
+                      misc/clock \
+                      misc/elf_note_types \
+                      misc/from_pointer_cast \
+                      misc/implicit_cast \
+                      misc/initialization_state \
+                      misc/initialization_state_dcheck \
+                      misc/lexing \
+                      misc/memory_sanitizer \
+                      misc/metrics \
+                      misc/paths \
+                      misc/pdb_structures \
+                      misc/random_string \
+                      misc/range_set \
+                      misc/reinterpret_bytes \
+                      misc/scoped_forbid_return \
+                      misc/symbolic_constants_common \
+                      misc/time \
+                      misc/tri_state \
+                      misc/uuid \
+                      misc/zlib \
+                      numeric/checked_address_range \
+                      numeric/checked_range \
+                      numeric/checked_vm_address_range \
+                      numeric/in_range_cast \
+                      numeric/int128 \
+                      numeric/safe_assignment \
+                      process/process_id \
+                      process/process_memory \
+                      process/process_memory_native \
+                      process/process_memory_range \
+                      stdlib/aligned_allocator \
+                      stdlib/map_insert \
+                      stdlib/objc \
+                      stdlib/string_number_conversion \
+                      stdlib/strlcpy \
+                      stdlib/strnlen \
+                      stdlib/thread_safe_vector \
+                      stream/base94_output_stream \
+                      stream/file_encoder \
+                      stream/file_output_stream \
+                      stream/log_output_stream \
+                      stream/output_stream_interface \
+                      stream/zlib_output_stream \
+                      string/split_string \
+                      synchronization/semaphore \
+                      thread/stoppable \
+                      thread/thread \
+                      thread/thread_log_messages \
+                      thread/worker_thread \
+                      ../third_party/zlib/zlib_crashpad
+                 
+util_common_source =  file/delimited_file_reader \
+                      file/file_helper \
+                      file/file_io \
+                      file/file_reader \
+                      file/file_seeker \
+                      file/file_writer \
+                      file/output_stream_file_writer \
+                      file/scoped_remove_file \
+                      file/string_file \
+                      misc/initialization_state_dcheck \
+                      misc/lexing \
+                      misc/metrics \
+                      misc/pdb_structures \
+                      misc/random_string \
+                      misc/range_set \
+                      misc/reinterpret_bytes \
+                      misc/scoped_forbid_return \
+                      misc/time \
+                      misc/uuid \
+                      misc/zlib \
+                      numeric/checked_address_range \
+                      process/process_memory \
+                      process/process_memory_range \
+                      stdlib/aligned_allocator \
+                      stdlib/string_number_conversion \
+                      stdlib/strlcpy \
+                      stdlib/strnlen \
+                      stream/base94_output_stream \
+                      stream/file_encoder \
+                      stream/file_output_stream \
+                      stream/log_output_stream \
+                      stream/zlib_output_stream \
+                      string/split_string \
+                      thread/thread \
+                      thread/thread_log_messages \
+                      thread/worker_thread
+
+util_posix_headers =  posix/close_stdio \
+                      posix/scoped_dir \
+                      posix/scoped_mmap \
+                      posix/signals \
+                      posix/close_multiple \
+                      posix/drop_privileges \
+                      posix/process_info \
+                      posix/spawn_subprocess \
+                      posix/symbolic_constants_posix \
+                      ../third_party/lss/lss \
+                      ../third_party/lss/linux_syscall_support
+
+util_posix_source =   file/directory_reader_posix \
+                      file/file_io_posix \
+                      file/filesystem_posix \
+                      misc/clock_posix \
+                      posix/close_stdio \
+                      posix/scoped_dir \
+                      posix/scoped_mmap \
+                      posix/signals \
+                      synchronization/semaphore_posix \
+                      thread/thread_posix \
+                      posix/close_multiple \
+                      posix/drop_privileges \
+                      posix/spawn_subprocess \
+                      posix/symbolic_constants_posix
+
+util_linux_headers =  linux/address_types \
+                      linux/auxiliary_vector \
+                      linux/checked_linux_address_range \
+                      linux/direct_ptrace_connection \
+                      linux/exception_handler_client \
+                      linux/exception_handler_protocol \
+                      linux/exception_information \
+                      linux/memory_map \
+                      linux/proc_stat_reader \
+                      linux/proc_task_reader \
+                      linux/ptrace_broker \
+                      linux/ptrace_client \
+                      linux/ptrace_connection \
+                      linux/ptracer \
+                      linux/scoped_pr_set_dumpable \
+                      linux/scoped_pr_set_ptracer \
+                      linux/scoped_ptrace_attach \
+                      linux/socket \
+                      linux/thread_info \
+                      linux/traits \
+                      process/process_memory_linux \
+                      process/process_memory_sanitized
+
+util_linux_source =   linux/auxiliary_vector \
+                      linux/direct_ptrace_connection \
+                      linux/exception_handler_client \
+                      linux/exception_handler_protocol \
+                      linux/memory_map \
+                      linux/proc_stat_reader \
+                      linux/proc_task_reader \
+                      linux/ptrace_broker \
+                      linux/ptrace_client \
+                      linux/ptracer \
+                      linux/scoped_pr_set_dumpable \
+                      linux/scoped_pr_set_ptracer \
+                      linux/scoped_ptrace_attach \
+                      linux/socket \
+                      linux/thread_info \
+                      misc/paths_linux \
+                      misc/time_linux \
+                      posix/process_info_linux \
+                      process/process_memory_linux \
+                      process/process_memory_sanitized
+
+util_mac_headers =    mac/xattr \
+                      mach/composite_mach_message_server \
+                      mach/exc_client_variants \
+                      mach/exc_server_variants \
+                      mach/exception_behaviors \
+                      mach/exception_ports \
+                      mach/mach_extensions \
+                      mach/mach_message \
+                      mach/mach_message_server \
+                      mach/symbolic_constants_mach \
+                      mac/checked_mach_address_range \
+                      mac/launchd \
+                      mac/mac_util \
+                      mac/service_management \
+                      mac/sysctl \
+                      mach/bootstrap \
+                      mach/child_port_handshake \
+                      mach/child_port_server \
+                      mach/child_port_types \
+                      mach/exception_types \
+                      mach/notify_server \
+                      mach/scoped_task_suspend \
+                      mach/task_for_pid \
+                      process/process_memory_mac \
+                      mach/exc \
+                      mach/excServer \
+                      mach/mach_exc \
+                      mach/mach_excServer \
+                      mach/notify \
+                      mach/notifyServer \
+                      mach/child_port \
+                      mach/child_portServer
+
+util_mac_source =     mac/xattr \
+                      mach/composite_mach_message_server \
+                      mach/exc_client_variants \
+                      mach/exc_server_variants \
+                      mach/exception_behaviors \
+                      mach/exception_ports \
+                      mach/mach_extensions \
+                      mach/mach_message \
+                      mach/mach_message_server \
+                      mach/symbolic_constants_mach \
+                      misc/clock_mac \
+                      misc/paths_mac \
+                      synchronization/semaphore_mac \
+                      mac/mac_util \
+                      mac/service_management \
+                      mac/sysctl \
+                      mach/bootstrap \
+                      mach/child_port_handshake \
+                      mach/child_port_server \
+                      mach/exception_types \
+                      mach/notify_server \
+                      mach/scoped_task_suspend \
+                      mach/task_for_pid \
+                      posix/process_info_mac \
+                      process/process_memory_mac \
+                      mach/excUser \
+                      mach/excServer \
+                      mach/mach_excUser \
+                      mach/mach_excServer \
+                      mach/notifyUser \
+                      mach/notifyServer \
+                      mach/child_portUser \
+                      mach/child_portServer
+
+util_macos_mm =       mac/launchd
+
+util_win_headers =    process/process_memory_win \
+                      win/address_types \
+                      win/checked_win_address_range \
+                      win/command_line \
+                      win/context_wrappers \
+                      win/critical_section_with_debug_info \
+                      win/exception_codes \
+                      win/exception_handler_server \
+                      win/get_function \
+                      win/get_module_information \
+                      win/handle \
+                      win/initial_client_data \
+                      win/loader_lock \
+                      win/module_version \
+                      win/nt_internals \
+                      win/ntstatus_logging \
+                      win/process_info \
+                      win/process_structs \
+                      win/registration_protocol_win \
+                      win/registration_protocol_win_structs \
+                      win/safe_terminate_process \
+                      win/scoped_handle \
+                      win/scoped_local_alloc \
+                      win/scoped_process_suspend \
+                      win/scoped_registry_key \
+                      win/scoped_set_event \
+                      win/session_end_watcher \
+                      win/termination_codes \
+                      win/traits \
+                      win/xp_compat
+
+util_win_source =     file/directory_reader_win \
+                      file/file_io_win \
+                      file/filesystem_win \
+                      misc/clock_win \
+                      misc/paths_win \
+                      misc/time_win \
+                      process/process_memory_win \
+                      synchronization/semaphore_win \
+                      thread/thread_win \
+                      win/command_line \
+                      win/critical_section_with_debug_info \
+                      win/exception_handler_server \
+                      win/get_function \
+                      win/get_module_information \
+                      win/handle \
+                      win/initial_client_data \
+                      win/loader_lock \
+                      win/module_version \
+                      win/nt_internals \
+                      win/ntstatus_logging \
+                      win/process_info \
+                      win/registration_protocol_win \
+                      win/scoped_handle \
+                      win/scoped_local_alloc \
+                      win/scoped_process_suspend \
+                      win/scoped_set_event \
+                      win/session_end_watcher
+
+net_common_headers =  net/http_body \
+                      net/http_body_gzip \
+                      net/http_headers \
+                      net/http_multipart_builder \
+                      net/http_transport \
+                      net/url \
+                      ../package
+
+net_common_source =   net/http_body \
+                      net/http_body_gzip \
+                      net/http_multipart_builder \
+                      net/http_transport \
+                      net/url
+
+net_macos_mm =        net/http_transport_mac
+# See https://github.com/chromium/crashpad/blob/ca3cf2f4e3b5df79182888711b01bf58c1142f28/util/net/tls.gni#L20-L21
+net_linux_source =    net/http_transport_libcurl
+
+net_win_source =      net/http_transport_win
+
+./: lib{util} lib{net} lib{no_cfi_icall}
+
+lib{util}: {hxx}{$util_common_headers} {cxx}{$util_common_source}
+lib{util}: {hxx}{$util_posix_headers} {cxx}{$util_posix_source}: include = ($cxx.target.class != 'windows')
+lib{util}: {hxx}{$util_linux_headers} {cxx}{$util_linux_source}: include = ($cxx.target.class == 'linux')
+lib{util}: {hxx}{$util_mac_headers} {cxx}{$util_mac_source}: include = ($cxx.target.class == 'macos')
+lib{util}: {hxx}{$util_win_headers} {cxx}{$util_win_source}: include = ($cxx.target.class == 'windows')
+lib{util}: $impl_libs $intf_libs lib{no_cfi_icall}
+
+lib{net}: {hxx}{$net_common_headers} {cxx}{$net_common_source}
+lib{net}: {cxx}{$net_win_source}: include = ($cxx.target.class == 'windows')
+lib{net}: {cxx}{$net_linux_source}: include = ($cxx.target.class == 'linux')
+lib{net}: $impl_libs $intf_libs lib{util}
+
+lib{no_cfi_icall}: {hxx}{misc/no_cfi_icall}
+lib{no_cfi_icall}: $no_cfi_icall_intf_libs
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
+
+if ($cxx.id == 'gcc')
+{
+    cxx.coptions += -fpermissive -Wno-multichar
+}
+
+# util export options.
+lib{util}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
+  cxx.export.libs = $intf_libs lib{no_cfi_icall}
+}
+
+# net export options.
+lib{net}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# no_cfi_icall export options.
+lib{no_cfi_icall}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $no_cfi_icall_intf_libs
+}
+
+switch $cxx.target.class
+{
+  case 'linux'
+  {
+    cxx.libs += -ldl
+  }
+  case 'macos'
+  {
+    cxx.libs += -framework CoreFoundation      \
+                -framework Foundation          \
+                -framework IOKit               \
+                -framework CoreServices        \
+                -lbsm
+  }
+  case 'windows'
+  {
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+
+    #TODO Check if user32.lib/winhttp.lib are not automatically and are required to be specifed here.
+    if ($cxx.target.system != 'mingw32')
+    {
+      cxx.libs += mincore.lib Advapi32.lib
+    }
+  }
+}
+
+#TODO Fix assembly stuff for windows, see https://github.com/chromium/crashpad/blob/6278690abe6ef0dda047e67dc1d0c49ce7af3811/util/BUILD.gn#L526-L543
+enable_assembly = (($cxx.target.class == 'macos') || ($cxx.target.class == 'linux'))
+if ($enable_assembly)
+{
+    lib{util}: cxx.coptions += "-mbmi"
+}
+
+switch $cxx.target.class
+{
+  case 'linux'
+    assembly_source = misc/capture_context_linux.S misc/arm64_pac_bti.S
+  case 'macos'
+    assembly_source = misc/capture_context_mac.S
+  case 'windows'
+    assembly_source_win = misc/capture_context_win.asm win/safe_terminate_process.asm
+}
+
+for f: $assembly_source
+{
+    obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
+    {{
+        diag as $>
+        $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/crashpad
+    }}
+
+    lib{util}: file{$f} obj{$name($f)}
+}
+
+for f: $assembly_source_win
+{
+    ml = $directory($effect($cxx.path))/ml64.exe
+
+    obja{$name($f)...a.obj} objs{$name($f)...s.obj}: $f $ml
+    {{
+        diag masm64 $>
+        $ml /Fo $path($>) /c $path($<[0])
+    }}
+
+    lib{util}: file{$f} obj{$name($f)}
+}
+
+for n: $util_macos_mm $net_macos_mm
+{
+  obja{$(n).a.o}: mm{$n}
+  objs{$(n).so.o}: mm{$n}
+}
+
+liba{util}: obja{$regex.apply($util_macos_mm,'(.+)','\1.a.o')}:  include = ($cxx.target.class == 'macos')
+libs{util}: objs{$regex.apply($util_macos_mm,'(.+)','\1.so.o')}: include = ($cxx.target.class == 'macos')
+
+liba{net}: obja{$regex.apply($net_macos_mm,'(.+)','\1.a.o')}:  include = ($cxx.target.class == 'macos')
+libs{net}: objs{$regex.apply($net_macos_mm,'(.+)','\1.so.o')}: include = ($cxx.target.class == 'macos')
+
+libul{meta}: $intf_libs
+
+obja{~'/(.*).a/'}: mm{~'/\1/'} libul{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libul{meta})
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base" "-I$src_base"                             \
+              --what=header --default-type=h                           \
+              --update-exclude libul{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
+objs{~'/(.*).so/'}: mm{~'/\1/'} libul{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libul{meta})
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base" "-I$src_base"                             \
+              --what=header --default-type=h                           \
+              --update-exclude libul{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/util/
+  install.subdirs = true
+}

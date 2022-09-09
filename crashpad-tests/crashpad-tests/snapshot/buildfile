@@ -1,0 +1,181 @@
+import libs += gtest%lib{gtest}
+import libs += gmock%lib{gmock}
+import libs += mini_chromium%lib{mini_chromium}
+import libs += crashpad%lib{client}
+import libs += crashpad%lib{client_common}
+import libs += crashpad%lib{compat}
+import libs += crashpad%lib{format}
+import libs += crashpad%lib{util}
+
+include ../test/
+
+libs += ../test/lib{test}
+
+import impl_libs += mini_chromium%lib{mini_chromium}
+import impl_libs += crashpad%lib{compat}
+import impl_libs += crashpad%lib{util}
+import intf_libs += crashpad%lib{snapshot}
+
+common_source =     cpu_context_test \
+                    memory_snapshot_test \
+                    minidump/process_snapshot_minidump_test
+
+linux_header =      linux/test_modules \
+                    ../util/misc/elf_note_types.h
+
+linux_source =      linux/debug_rendezvous_test \
+                    linux/exception_snapshot_linux_test \
+                    linux/process_reader_linux_test \
+                    linux/system_snapshot_linux_test \
+                    linux/test_modules \
+                    sanitized/process_snapshot_sanitized_test \
+                    sanitized/sanitization_information_test \
+                    crashpad_types/crashpad_info_reader_test \
+                    crashpad_types/image_annotation_reader_test \
+                    elf/elf_image_reader_test \
+                    posix/timezone_test
+
+macos_source =      mac/cpu_context_mac_test \
+                    mac/mach_o_image_annotations_reader_test \
+                    mac/mach_o_image_reader_test \
+                    mac/mach_o_image_segment_reader_test \
+                    mac/process_reader_mac_test \
+                    mac/process_types_test \
+                    mac/system_snapshot_mac_test \
+                    crashpad_info_client_options_test \
+                    posix/timezone_test
+
+win_source =        win/cpu_context_win_test \
+                    win/exception_snapshot_win_test \
+                    win/extra_memory_ranges_test \
+                    win/module_snapshot_win_test \
+                    win/pe_image_reader_test \
+                    win/process_reader_win_test \
+                    win/process_snapshot_win_test \
+                    win/system_snapshot_win_test \
+                    crashpad_info_client_options_test \
+                    crashpad_types/crashpad_info_reader_test
+
+snapshot_test_support_common_header = test/test_cpu_context \
+                                      test/test_exception_snapshot \
+                                      test/test_memory_map_region_snapshot \
+                                      test/test_memory_snapshot \
+                                      test/test_module_snapshot \
+                                      test/test_process_snapshot \
+                                      test/test_system_snapshot \
+                                      test/test_thread_snapshot
+
+snapshot_test_support_common_source = test/test_cpu_context \
+                                      test/test_exception_snapshot \
+                                      test/test_memory_map_region_snapshot \
+                                      test/test_memory_snapshot \
+                                      test/test_module_snapshot \
+                                      test/test_process_snapshot \
+                                      test/test_system_snapshot \
+                                      test/test_thread_snapshot
+
+./: exe{crashpad_snapshot_test} lib{snapshot_test_support}
+
+exe{crashpad_snapshot_test}: {hxx}{$common_headers} {cxx}{$common_source}
+exe{crashpad_snapshot_test}: {hxx}{$linux_header} {cxx}{$linux_source} file{elf/test_exported_symbols.sym} file{../util/misc/arm64_pac_bti.S}: include = ($cxx.target.class == 'linux')
+exe{crashpad_snapshot_test}: {cxx}{$macos_source}: include = ($cxx.target.class == 'macos')
+exe{crashpad_snapshot_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: {cxx}{../test/gtest_main}
+
+exe{crashpad_snapshot_test}: lib{snapshot_test_support} $libs
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_annotations}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_crashing_child}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_dump_without_crashing}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_extra_memory_ranges}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_image_reader}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: test = true
+
+lib{snapshot_test_support}: {hxx}{$snapshot_test_support_common_header} {cxx}{$snapshot_test_support_common_source} $impl_libs $intf_libs
+
+exe{crashpad_snapshot_test_annotations}: {cxx}{win/crashpad_snapshot_test_annotations}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test_annotations}: $libs: include = ($cxx.target.class == 'windows')
+
+exe{crashpad_snapshot_test_crashing_child}: {cxx}{win/crashpad_snapshot_test_crashing_child}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test_crashing_child}: $libs: include = ($cxx.target.class == 'windows')
+
+exe{crashpad_snapshot_test_dump_without_crashing}: {cxx}{win/crashpad_snapshot_test_dump_without_crashing}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test_dump_without_crashing}: $libs: include = ($cxx.target.class == 'windows')
+
+exe{crashpad_snapshot_test_extra_memory_ranges}: {cxx}{win/crashpad_snapshot_test_extra_memory_ranges}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test_extra_memory_ranges}: $libs: include = ($cxx.target.class == 'windows')
+
+exe{crashpad_snapshot_test_image_reader}: {cxx}{win/crashpad_snapshot_test_image_reader}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test_image_reader}: $libs: include = ($cxx.target.class == 'windows')
+
+cxx.poptions += "-I$src_root"/crashpad-tests
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+
+switch $cxx.target.class
+{
+  case 'linux'
+  {
+    cxx.libs += -ldl -pthread
+    cxx.loptions += -Wl,--dynamic-list,"$src_root"/crashpad-tests/snapshot/elf/test_exported_symbols.sym
+  }
+  case 'macos'
+  {
+    cxx.libs += -framework OpenCL
+  }
+  case 'windows'
+  {
+    cxx.libs = rpcrt4.lib
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+  }
+}
+
+enable_assembly = ($cxx.target.class == 'linux')
+if ($enable_assembly)
+{
+    exe{crashpad_snapshot_test}: cxx.coptions += "-mbmi"
+}
+
+switch $cxx.target.class
+{
+  case 'linux'
+    assembly_source = elf/elf_image_reader_test_note.S
+}
+
+for f: $assembly_source
+{
+    obje{$name($f)...a.o}: $f
+    {{
+        diag as $>
+        $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/crashpad-tests
+    }}
+    exe{crashpad_snapshot_test}: file{$f} obj{$name($f)}
+}
+
+# snapshot test support export options.
+#
+lib{snapshot_test_support}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad-tests
+  cxx.export.libs = $intf_libs
+}
+
+# --dynamic-list only works on gcc
+if (($cxx.target.class == 'linux') && ($cxx.id == 'clang'))
+{
+exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+ElfImageReader.OneModuleSelf:\
+ElfImageReader.OneModuleChild"
+}
+
+# TODO figure out why SystemSnapshotWinTest.TimeZone fails
+if ($cxx.target.class == 'windows')
+{
+exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+PEImageReader.DebugDirectory:\
+ProcessSnapshotTest.CrashpadInfoChild:\
+SystemSnapshotWinTest.TimeZone:\
+CrashpadInfoClientOptions.TwoModules:\
+CrashpadInfoSizes_ClientOptions*"
+}

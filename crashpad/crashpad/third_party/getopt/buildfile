@@ -1,0 +1,19 @@
+lib{getopt}: {hxx cxx}{getopt} $impl_libs $intf_libs
+
+# Build options.
+cxx.poptions =+ "-I$src_root"
+
+# Export options.
+lib{getopt}:
+{
+  cxx.export.poptions = "-I$src_root"
+  cxx.export.libs = $intf_libs
+}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/third_party/getopt
+  install.subdirs = true
+}

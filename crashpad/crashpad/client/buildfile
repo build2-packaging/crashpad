@@ -1,0 +1,182 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+
+include ../util/
+include ../build/
+intf_libs += ../util/lib{util}
+intf_libs += ../build/lib{build}
+
+libcommon_common_header = annotation \
+                          annotation_list \
+                          crash_report_database \
+                          crashpad_info \
+                          settings \
+                          simple_address_range_bag \
+                          simple_string_dictionary
+
+libcommon_common_source = annotation \
+                          annotation_list \
+                          crash_report_database \
+                          crashpad_info \
+                          settings
+
+libcommon_linux_source  = crash_report_database_generic
+libcommon_win_source    = crash_report_database_win
+libcommon_mac_mm        = crash_report_database_mac
+
+client_common_header    = crashpad_client \
+                          prune_crash_reports \
+                          simulate_crash
+
+client_common_source    = prune_crash_reports
+
+client_linux_header     = simulate_crash_linux \
+                          client_argv_handling
+
+client_linux_source     = crashpad_client_linux \
+                          client_argv_handling
+
+client_mac_header       = simulate_crash_mac
+
+client_mac_source       = crashpad_client_mac \
+                          simulate_crash_mac
+
+client_win_header       = simulate_crash_win
+
+client_win_source       = crashpad_client_win
+
+
+./: lib{client} lib{client_common}
+./: lib{pthread_create}: include = ($cxx.target.class == 'linux')
+
+lib{client_common}: {hxx}{$libcommon_common_header} {cxx}{$libcommon_common_source}
+lib{client_common}: {cxx}{$libcommon_linux_source}: include = ($cxx.target.class == 'linux')
+lib{client_common}: {cxx}{$libcommon_win_source}: include = ($cxx.target.class == 'windows')
+lib{client_common}: $impl_libs $intf_libs
+
+lib{client}: {hxx}{$client_common_header} {cxx}{$client_common_source}
+lib{client}: {hxx}{$client_linux_header} {cxx}{$client_linux_source}: include = ($cxx.target.class == 'linux')
+lib{client}: {hxx}{$client_mac_header} {cxx}{$client_mac_source}: include = ($cxx.target.class == 'macos')
+lib{client}: {hxx}{$client_win_header} {cxx}{$client_win_source}: include = ($cxx.target.class == 'windows')
+lib{client}: $impl_libs $intf_libs lib{client_common}
+
+lib{pthread_create}: {cxx}{pthread_create_linux} lib{client}: include = ($cxx.target.class == 'linux')
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad
+
+if ($cxx.id == 'gcc')
+{
+    cxx.coptions += -Wno-multichar
+}
+
+# libcommon export options.
+lib{client_common}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# client export options.
+lib{client}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs lib{client_common}
+}
+
+# pthread_create export options.
+lib{pthread_create}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+switch $cxx.target.class
+{
+  case 'macos'
+  {
+    cxx.libs += -framework CoreServices \
+                -framework Foundation
+  }
+  case 'windows'
+  {
+    cxx.libs = rpcrt4.lib
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+  }
+}
+
+enable_assembly = ($cxx.target.class == 'linux')
+if ($enable_assembly)
+{
+    lib{client_common}: c.coptions += "-mbmi"
+}
+
+switch $cxx.target.class
+{
+  case 'linux'
+    assembly_source = crashpad_info_note.S
+}
+
+for f: $assembly_source
+{
+    obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
+    {{
+        diag as $>
+        $cxx.path -o $path($>) -c $path($<[0])  "-I$src_root"/crashpad
+    }}
+    lib{client_common}: file{$f} obj{$name($f)}: include = $enable_assembly
+}
+
+for n: $libcommon_mac_mm
+{
+  obja{$(n).a.o}: mm{$n}
+  objs{$(n).so.o}: mm{$n}
+}
+
+liba{client_common}: obja{$regex.apply($libcommon_mac_mm,'(.+)','\1.a.o')}:  include = ($cxx.target.class == 'macos')
+libs{client_common}: objs{$regex.apply($libcommon_mac_mm,'(.+)','\1.so.o')}: include = ($cxx.target.class == 'macos')
+
+libul{meta}: $intf_libs
+
+obja{~'/(.*).a/'}: mm{~'/\1/'} libul{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libul{meta})
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base" "-I$src_base"                             \
+              --what=header --default-type=h                           \
+              --update-exclude libul{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
+objs{~'/(.*).so/'}: mm{~'/\1/'} libul{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libul{meta})
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base" "-I$src_base"                             \
+              --what=header --default-type=h                           \
+              --update-exclude libul{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/client/
+  install.subdirs = true
+}

@@ -1,0 +1,117 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+
+include ../compat/
+include ../util/
+include ../snapshot/
+include ../build/
+
+intf_libs += ../build/lib{build}
+intf_libs += ../compat/lib{compat}
+impl_libs += ../snapshot/lib{context}
+impl_libs += ../util/lib{util}
+
+minidump_intf_libs += lib{format}
+minidump_impl_libs += ../snapshot/lib{snapshot}
+
+format_common_headers   = minidump_context \
+                          minidump_extensions
+
+format_common_source    = minidump_extensions
+
+minidump_common_headers = minidump_annotation_writer \
+                          minidump_byte_array_writer \
+                          minidump_context_writer \
+                          minidump_crashpad_info_writer \
+                          minidump_exception_writer \
+                          minidump_file_writer \
+                          minidump_handle_writer \
+                          minidump_memory_info_writer \
+                          minidump_memory_writer \
+                          minidump_misc_info_writer \
+                          minidump_module_crashpad_info_writer \
+                          minidump_module_writer \
+                          minidump_rva_list_writer \
+                          minidump_simple_string_dictionary_writer \
+                          minidump_stream_writer \
+                          minidump_string_writer \
+                          minidump_system_info_writer \
+                          minidump_thread_id_map \
+                          minidump_thread_name_list_writer \
+                          minidump_thread_writer \
+                          minidump_unloaded_module_writer \
+                          minidump_user_extension_stream_data_source \
+                          minidump_user_stream_writer \
+                          minidump_writable \
+                          minidump_writer_util \
+                          ../package
+
+minidump_common_source  = minidump_annotation_writer \
+                          minidump_byte_array_writer \
+                          minidump_context_writer \
+                          minidump_crashpad_info_writer \
+                          minidump_exception_writer \
+                          minidump_file_writer \
+                          minidump_handle_writer \
+                          minidump_memory_info_writer \
+                          minidump_memory_writer \
+                          minidump_misc_info_writer \
+                          minidump_module_crashpad_info_writer \
+                          minidump_module_writer \
+                          minidump_rva_list_writer \
+                          minidump_simple_string_dictionary_writer \
+                          minidump_stream_writer \
+                          minidump_string_writer \
+                          minidump_system_info_writer \
+                          minidump_thread_id_map \
+                          minidump_thread_name_list_writer \
+                          minidump_thread_writer \
+                          minidump_unloaded_module_writer \
+                          minidump_user_extension_stream_data_source \
+                          minidump_user_stream_writer \
+                          minidump_writable \
+                          minidump_writer_util
+
+./: lib{minidump} lib{format}
+
+lib{format}: {hxx}{$format_common_headers} {cxx}{$format_common_source} $impl_libs $intf_libs
+
+lib{minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $intf_libs $minidump_intf_libs $minidump_impl_libs
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad
+
+switch $cxx.target.class
+{
+  case 'windows'
+  {
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+  }
+}
+
+# format export options.
+#
+lib{format}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# minidump export options.
+#
+lib{minidump}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs $minidump_intf_libs
+}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/minidump/
+  install.subdirs = true
+}

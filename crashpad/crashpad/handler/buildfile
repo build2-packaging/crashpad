@@ -1,0 +1,122 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+
+include ../client/
+include ../snapshot/
+include ../util/
+include ../minidump/
+include ../tools/
+include ../build/
+
+intf_libs += ../build/lib{build}
+intf_libs += ../util/lib{util}
+impl_libs += ../util/lib{net}
+impl_libs += ../client/lib{client_common}
+impl_libs += ../snapshot/lib{snapshot}
+
+handler_intf_libs += ../client/lib{client}
+handler_impl_libs += lib{handler_common}
+handler_impl_libs += ../minidump/lib{minidump}
+handler_impl_libs += ../tools/lib{tool_support}
+
+libcommon_common_headers =  crash_report_upload_thread \
+                            minidump_to_upload_parameters
+   
+libcommon_common_source =   crash_report_upload_thread \
+                            minidump_to_upload_parameters
+
+libcommon_macos_headers =   mac/file_limit_annotation
+
+libcommon_macos_source =    mac/file_limit_annotation
+
+libhandler_common_headers = handler_main \
+                            prune_crash_reports_thread \
+                            user_stream_data_source
+
+libhandler_common_source =  handler_main \
+                            prune_crash_reports_thread \
+                            user_stream_data_source
+
+libhandler_linux_header =   linux/capture_snapshot \
+                            linux/crash_report_exception_handler \
+                            linux/exception_handler_server \
+                            linux/cros_crash_report_exception_handler
+
+libhandler_linux_source =   linux/capture_snapshot \
+                            linux/crash_report_exception_handler \
+                            linux/exception_handler_server \
+                            linux/cros_crash_report_exception_handler
+
+libhandler_macos_header =   mac/exception_handler_server \
+                            mac/crash_report_exception_handler
+
+libhandler_macos_source =   mac/exception_handler_server \
+                            mac/crash_report_exception_handler
+
+libhandler_win_header =     win/crash_report_exception_handler
+
+libhandler_win_source =     win/crash_report_exception_handler
+
+include ../third_party/getopt/
+
+./: lib{handler} lib{handler_common} exe{crashpad_handler}
+#./: file{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
+
+lib{handler_common}: {hxx}{$libcommon_common_headers} {cxx}{$libcommon_common_source}
+lib{handler_common}: {hxx}{$libcommon_macos_headers} {cxx}{$libcommon_macos_source}: include = ($cxx.target.class == 'macos')
+lib{handler_common}: $impl_libs $intf_libs
+
+lib{handler}: {hxx}{$libhandler_common_headers} {cxx}{$libhandler_common_source}
+lib{handler}: {hxx}{$libhandler_linux_header} {cxx}{$libhandler_linux_source}: include = ($cxx.target.class == 'linux')
+lib{handler}: {hxx}{$libhandler_macos_header} {cxx}{$libhandler_macos_source}: include = ($cxx.target.class == 'macos')
+lib{handler}: {hxx}{$libhandler_win_header} {cxx}{$libhandler_win_source} ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
+lib{handler}: $impl_libs $intf_libs $handler_intf_libs $handler_impl_libs
+
+exe{crashpad_handler}: {cxx}{main} $impl_libs $intf_libs lib{handler} ../compat/lib{compat} ../tools/lib{tool_support}
+exe{crashpad_handler}: ../client/lib{pthread_create}: include = ($cxx.target.class == 'linux')
+
+# TODO: Figure out how to propery set this up so it gets installed correctly.
+#exe{crashpad_handler_com.com}: {cxx}{main} $impl_libs $intf_libs lib{handler} ../compat/lib{compat} ../tools/lib{tool_support}: include = ($cxx.target.class == 'windows')
+#file{crashpad_handler.com}: exe{crashpad_handler_com.com}
+#{{
+#    diag cp $path($<) $path($>)
+#    cp $path($<) $path($>)
+#}}
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad
+
+if ($cxx.target.class == 'windows')
+{
+  cxx.poptions += -DUNICODE  \
+                  -D_UNICODE \
+                  -DNOMINMAX \
+                  -DWIN32_LEAN_AND_MEAN
+}
+
+if($cxx.target.system == 'win32-msvc')
+{
+  exe{crashpad_handler}: cxx.loptions += '/subsystem:windows'
+  exe{crashpad_handler_com.com}: cxx.loptions += '/subsystem:console'
+}
+
+# common export options.
+lib{handler_common}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# libhandler export options.
+lib{handler}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs $handler_intf_libs
+}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/handler/
+  install.subdirs = true
+}

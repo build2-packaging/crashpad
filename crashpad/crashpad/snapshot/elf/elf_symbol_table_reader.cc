@@ -1,0 +1,1 @@
+../../../../upstream/snapshot/elf/elf_symbol_table_reader.cc

@@ -1,0 +1,25 @@
+import intf_libs += mini_chromium%lib{mini_chromium}
+
+include ../build/
+intf_libs += ../build/lib{build}
+
+lib{tool_support}: {hxx}{tool_support ../package} {cxx}{tool_support} $impl_libs $intf_libs
+
+# Build options.
+cxx.poptions =+ "-I$src_root"/crashpad
+
+# Export options.
+lib{tool_support}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.libs = $intf_libs
+}
+
+# Install into the crashpad/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/tools/
+  install.subdirs = true
+}

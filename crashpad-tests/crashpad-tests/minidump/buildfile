@@ -1,0 +1,82 @@
+import impl_libs += gtest%lib{gtest}
+import impl_libs += gmock%lib{gmock}
+import impl_libs += mini_chromium%lib{mini_chromium}
+import impl_libs += crashpad%lib{util}
+import impl_libs += crashpad%lib{snapshot}
+
+include ../test/
+include ../snapshot/
+
+impl_libs += ../snapshot/lib{snapshot_test_support} 
+impl_libs += ../test/lib{test}
+
+import test_support_intf_libs += crashpad%lib{minidump}
+
+common_source =                       minidump_annotation_writer_test \
+                                      minidump_byte_array_writer_test \
+                                      minidump_context_writer_test \
+                                      minidump_crashpad_info_writer_test \
+                                      minidump_exception_writer_test \
+                                      minidump_file_writer_test \
+                                      minidump_handle_writer_test \
+                                      minidump_memory_info_writer_test \
+                                      minidump_memory_writer_test \
+                                      minidump_misc_info_writer_test \
+                                      minidump_module_crashpad_info_writer_test \
+                                      minidump_module_writer_test \
+                                      minidump_rva_list_writer_test \
+                                      minidump_simple_string_dictionary_writer_test \
+                                      minidump_string_writer_test \
+                                      minidump_system_info_writer_test \
+                                      minidump_thread_id_map_test \
+                                      minidump_thread_name_list_writer_test \
+                                      minidump_thread_writer_test \
+                                      minidump_unloaded_module_writer_test \
+                                      minidump_user_stream_writer_test \
+                                      minidump_writable_test
+
+minidump_test_support_common_header = test/minidump_byte_array_writer_test_util \
+                                      test/minidump_context_test_util \
+                                      test/minidump_file_writer_test_util \
+                                      test/minidump_memory_writer_test_util \
+                                      test/minidump_rva_list_test_util \
+                                      test/minidump_string_writer_test_util \
+                                      test/minidump_user_extension_stream_util \
+                                      test/minidump_writable_test_util
+
+minidump_test_support_common_source = test/minidump_byte_array_writer_test_util \
+                                      test/minidump_context_test_util \
+                                      test/minidump_file_writer_test_util \
+                                      test/minidump_memory_writer_test_util \
+                                      test/minidump_rva_list_test_util \
+                                      test/minidump_string_writer_test_util \
+                                      test/minidump_user_extension_stream_util \
+                                      test/minidump_writable_test_util
+
+./: lib{minidump_test_support} exe{crashpad_minidump_test}
+
+exe{crashpad_minidump_test}: {cxx}{$common_source}
+exe{crashpad_minidump_test}: {cxx}{../test/gtest_main}
+exe{crashpad_minidump_test}: lib{minidump_test_support} $impl_libs
+exe{crashpad_minidump_test}: test = true
+
+lib{minidump_test_support}: {hxx}{$minidump_test_support_common_header} {cxx}{$minidump_test_support_common_source} $impl_libs $test_support_intf_libs
+
+cxx.poptions += "-I$src_root"/crashpad-tests
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+
+if ($cxx.target.class == 'windows')
+{
+  cxx.poptions += -DUNICODE  \
+                  -D_UNICODE \
+                  -DNOMINMAX \
+                  -DWIN32_LEAN_AND_MEAN
+}
+
+# minidump test support export options.
+#
+lib{minidump_test_support}:
+{
+  cxx.export.poptions = "-I$src_root"/crashpad-tests
+  cxx.export.libs = $test_support_intf_libs
+}

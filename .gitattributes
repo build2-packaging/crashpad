@@ -1,0 +1,100 @@
+# This is a good default: files that are auto-detected by git to be text are
+# converted to the platform-native line ending (LF on Unix, CRLF on Windows)
+# in the working tree and to LF in the repository.
+#
+* text=auto
+
+# Use `eol=crlf` for files that should have the CRLF line ending both in the
+# working tree (even on Unix) and in the repository.
+#
+#*.bat text eol=crlf
+
+# Use `eol=lf` for files that should have the LF line ending both in the
+# working tree (even on Windows) and in the repository.
+#
+#*.sh text eol=lf
+
+# Use `binary` to make sure certain files are never auto-detected as text.
+#
+#*.png binary
+crashpad/crashpad/third_party/zlib symlink=dir
+
+crashpad/crashpad/util/fuchsia symlink=dir
+crashpad/crashpad/util/ios symlink=dir
+crashpad/crashpad/util/linux symlink=dir
+crashpad/crashpad/util/mac symlink=dir
+crashpad/crashpad/util/mach symlink=dir
+crashpad/crashpad/util/misc symlink=dir
+crashpad/crashpad/util/net symlink=dir
+crashpad/crashpad/util/numeric symlink=dir
+crashpad/crashpad/util/process symlink=dir
+crashpad/crashpad/util/posix symlink=dir
+crashpad/crashpad/util/stdlib symlink=dir
+crashpad/crashpad/util/stream symlink=dir
+crashpad/crashpad/util/string symlink=dir
+crashpad/crashpad/util/synchronization symlink=dir
+crashpad/crashpad/util/thread symlink=dir
+crashpad/crashpad/util/win symlink=dir
+crashpad/crashpad/compat/android symlink=dir
+crashpad/crashpad/compat/ios symlink=dir
+crashpad/crashpad/compat/linux symlink=dir
+crashpad/crashpad/compat/mac symlink=dir
+crashpad/crashpad/compat/non_mac symlink=dir
+crashpad/crashpad/compat/non_win symlink=dir
+crashpad/crashpad/compat/win symlink=dir
+crashpad/crashpad/snapshot/crashpad_types symlink=dir
+crashpad/crashpad/snapshot/fuchsia symlink=dir
+crashpad/crashpad/snapshot/ios symlink=dir
+crashpad/crashpad/snapshot/linux symlink=dir
+crashpad/crashpad/snapshot/mac symlink=dir
+crashpad/crashpad/snapshot/minidump symlink=dir
+crashpad/crashpad/snapshot/posix symlink=dir
+crashpad/crashpad/snapshot/sanitized symlink=dir
+crashpad/crashpad/snapshot/test symlink=dir
+crashpad/crashpad/snapshot/win symlink=dir
+crashpad/crashpad/snapshot/x86 symlink=dir
+crashpad/crashpad/minidump/test symlink=dir
+crashpad/crashpad/tools/mac symlink=dir
+crashpad/crashpad/handler/linux symlink=dir
+crashpad/crashpad/handler/mac symlink=dir
+crashpad/crashpad/handler/win/wer symlink=dir
+
+crashpad-tests/crashpad-tests/test/ios symlink=dir
+crashpad-tests/crashpad-tests/test/linux symlink=dir
+crashpad-tests/crashpad-tests/test/mac symlink=dir
+crashpad-tests/crashpad-tests/test/win symlink=dir
+crashpad-tests/crashpad-tests/util/file symlink=dir
+crashpad-tests/crashpad-tests/util/fuchsia symlink=dir
+crashpad-tests/crashpad-tests/util/ios symlink=dir
+crashpad-tests/crashpad-tests/util/linux symlink=dir
+crashpad-tests/crashpad-tests/util/mac symlink=dir
+crashpad-tests/crashpad-tests/util/mach symlink=dir
+crashpad-tests/crashpad-tests/util/misc symlink=dir
+crashpad-tests/crashpad-tests/util/net symlink=dir
+crashpad-tests/crashpad-tests/util/numeric symlink=dir
+crashpad-tests/crashpad-tests/util/posix symlink=dir
+crashpad-tests/crashpad-tests/util/process symlink=dir
+crashpad-tests/crashpad-tests/util/stdlib symlink=dir
+crashpad-tests/crashpad-tests/util/stream symlink=dir
+crashpad-tests/crashpad-tests/util/string symlink=dir
+crashpad-tests/crashpad-tests/util/synchronization symlink=dir
+crashpad-tests/crashpad-tests/util/thread symlink=dir
+crashpad-tests/crashpad-tests/util/win symlink=dir
+crashpad-tests/crashpad-tests/third_party/zlib symlink=dir
+crashpad-tests/crashpad-tests/snapshot/crashpad_types symlink=dir
+crashpad-tests/crashpad-tests/snapshot/elf symlink=dir
+crashpad-tests/crashpad-tests/snapshot/fuchsia symlink=dir
+crashpad-tests/crashpad-tests/snapshot/ios symlink=dir
+crashpad-tests/crashpad-tests/snapshot/linux symlink=dir
+crashpad-tests/crashpad-tests/snapshot/mac symlink=dir
+crashpad-tests/crashpad-tests/snapshot/minidump symlink=dir
+crashpad-tests/crashpad-tests/snapshot/posix symlink=dir
+crashpad-tests/crashpad-tests/snapshot/sanitized symlink=dir
+crashpad-tests/crashpad-tests/snapshot/test symlink=dir
+crashpad-tests/crashpad-tests/snapshot/win symlink=dir
+crashpad-tests/crashpad-tests/snapshot/x86 symlink=dir
+crashpad-tests/crashpad-tests/minidump/test symlink=dir
+crashpad-tests/crashpad-tests/client/ios_handler symlink=dir
+crashpad-tests/crashpad-tests/handler/linux symlink=dir
+crashpad-tests/crashpad-tests/handler/mac symlink=dir
+crashpad-tests/crashpad-tests/handler/win symlink=dir

@@ -1,0 +1,51 @@
+import libs += gtest%lib{gtest}
+import libs += gmock%lib{gmock}
+import libs += mini_chromium%lib{mini_chromium}
+import libs += crashpad%lib{handler}
+import libs += crashpad%lib{handler_common}
+import libs += crashpad%lib{client}
+import libs += crashpad%lib{compat}
+import libs += crashpad%lib{util}
+import libs += crashpad%lib{snapshot}
+import libs += crashpad%lib{tool_support}
+
+include ../test/
+include ../snapshot/
+include ../minidump/
+
+libs += ../test/lib{test}
+libs += ../snapshot/lib{snapshot_test_support}
+libs += ../minidump/lib{minidump_test_support}
+
+common_source =  minidump_to_upload_parameters_test
+
+linux_source =   linux/exception_handler_server_test
+
+win_source =     crashpad_handler_test
+
+./: exe{crashpad_handler_test}
+
+exe{crashpad_handler_test}: {cxx}{$common_source}
+exe{crashpad_handler_test}: {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
+exe{crashpad_handler_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
+exe{crashpad_handler_test}: {cxx}{../test/gtest_main}
+exe{crashpad_handler_test}: $libs
+exe{crashpad_handler_test}: exe{crashpad_handler_test_extended_handler}: include = ($cxx.target.class == 'windows')
+exe{crashpad_handler_test}: test = true
+
+exe{crashpad_handler_test_extended_handler}: {cxx}{crashpad_handler_test_extended_handler}
+exe{crashpad_handler_test_extended_handler}: $libs
+
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+
+switch $cxx.target.class
+{
+  case 'windows'
+  {
+    cxx.libs = rpcrt4.lib
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+  }
+}

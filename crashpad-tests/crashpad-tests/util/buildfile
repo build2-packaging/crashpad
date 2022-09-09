@@ -1,0 +1,203 @@
+import libs += gtest%lib{gtest}
+import libs += gmock%lib{gmock}
+import libs += mini_chromium%lib{mini_chromium}
+import libs += libz%lib{z}
+import libs += crashpad%lib{util}
+import libs += crashpad%lib{net}
+import libs += crashpad%lib{client}
+
+include ../test/
+libs += ../test/lib{test}
+
+common_headers =  ../third_party/zlib/zlib_crashpad \
+                  misc/capture_context_test_util \
+                  net/http_body_test_util \
+                  stream/test_output_stream
+
+common_source =   file/delimited_file_reader_test \
+                  file/directory_reader_test \
+                  file/file_io_test \
+                  file/file_reader_test \
+                  file/filesystem_test \
+                  file/string_file_test \
+                  misc/arraysize_test \
+                  misc/capture_context_test \
+                  misc/clock_test \
+                  misc/from_pointer_cast_test \
+                  misc/initialization_state_dcheck_test \
+                  misc/initialization_state_test \
+                  misc/no_cfi_icall_test \
+                  misc/paths_test \
+                  misc/random_string_test \
+                  misc/range_set_test \
+                  misc/reinterpret_bytes_test \
+                  misc/scoped_forbid_return_test \
+                  misc/time_test \
+                  misc/uuid_test \
+                  net/http_body_gzip_test \
+                  net/http_body_test \
+                  net/http_body_test_util \
+                  net/http_multipart_builder_test \
+                  net/url_test \
+                  numeric/checked_address_range_test \
+                  numeric/checked_range_test \
+                  numeric/in_range_cast_test \
+                  numeric/int128_test \
+                  process/process_memory_range_test \
+                  process/process_memory_test \
+                  stdlib/aligned_allocator_test \
+                  stdlib/map_insert_test \
+                  stdlib/string_number_conversion_test \
+                  stdlib/strlcpy_test \
+                  stdlib/strnlen_test \
+                  stdlib/thread_safe_vector_test \
+                  stream/base94_output_stream_test \
+                  stream/file_encoder_test \
+                  stream/log_output_stream_test \
+                  stream/test_output_stream \
+                  stream/zlib_output_stream_test \
+                  string/split_string_test \
+                  synchronization/semaphore_test \
+                  thread/thread_log_messages_test \
+                  thread/thread_test \
+                  thread/worker_thread_test \
+                  net/http_transport_test
+
+posix_source =   posix/process_info_test \
+                 posix/signals_test \
+                 posix/symbolic_constants_posix_test \
+                 posix/scoped_mmap_test
+
+linux_header =   ../third_party/lss/lss \
+                 ../third_party/lss/linux_syscall_support
+
+linux_source =   linux/auxiliary_vector_test \
+                 linux/memory_map_test \
+                 linux/proc_stat_reader_test \
+                 linux/proc_task_reader_test \
+                 linux/ptrace_broker_test \
+                 linux/ptracer_test \
+                 linux/scoped_ptrace_attach_test \
+                 linux/socket_test \
+                 misc/capture_context_test_util_linux \
+                 process/process_memory_sanitized_test
+
+macos_source =  mac/xattr_test \
+                mach/composite_mach_message_server_test \
+                mach/exc_server_variants_test \
+                mach/exception_behaviors_test \
+                mach/mach_extensions_test \
+                mach/mach_message_test \
+                mach/symbolic_constants_mach_test \
+                misc/capture_context_test_util_mac \
+                mac/sysctl_test \
+                mach/bootstrap_test \
+                mach/child_port_handshake_test \
+                mach/child_port_server_test \
+                mach/exc_client_variants_test \
+                mach/exception_ports_test \
+                mach/exception_types_test \
+                mach/mach_message_server_test \
+                mach/notify_server_test \
+                mach/scoped_task_suspend_test \
+                process/process_memory_mac_test
+
+macos_mm =      mac/launchd_test \
+                mac/mac_util_test \
+                mac/service_management_test
+
+win_source =    misc/capture_context_test_util_win \
+                win/command_line_test \
+                win/critical_section_with_debug_info_test \
+                win/exception_handler_server_test \
+                win/get_function_test \
+                win/handle_test \
+                win/initial_client_data_test \
+                win/loader_lock_test \
+                win/process_info_test \
+                win/registration_protocol_win_test \
+                win/safe_terminate_process_test \
+                win/scoped_process_suspend_test \
+                win/session_end_watcher_test
+
+./: exe{crashpad_util_test}
+
+exe{crashpad_util_test}: {hxx}{$common_headers} {cxx}{$common_source}
+exe{crashpad_util_test}: {cxx}{$posix_source}: include = ($cxx.target.class != 'windows')
+exe{crashpad_util_test}: {hxx}{$linux_header} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
+exe{crashpad_util_test}: {cxx}{$macos_source}: include = ($cxx.target.class == 'macos')
+exe{crashpad_util_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
+exe{crashpad_util_test}: {cxx}{../test/gtest_main}
+
+exe{crashpad_util_test}: exe{crashpad_util_test_process_info_test_child}: include = ($cxx.target.class == 'windows')
+exe{crashpad_util_test}: exe{crashpad_util_test_safe_terminate_process_test_child}: include = ($cxx.target.class == 'windows')
+exe{crashpad_util_test}: $libs
+
+exe{crashpad_util_test_process_info_test_child}: {cxx}{win/process_info_test_child}: include = ($cxx.target.class == 'windows')
+exe{crashpad_util_test_safe_terminate_process_test_child}: {cxx}{win/safe_terminate_process_test_child}: include = ($cxx.target.class == 'windows')
+
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+
+switch $cxx.target.class
+{
+  case 'linux'
+  {
+    cxx.libs += -ldl
+  }
+  case 'macos'
+  {
+    cxx.libs += -framework Foundation
+  }
+  case 'windows'
+  {
+    cxx.poptions += -DUNICODE  \
+                    -D_UNICODE \
+                    -DNOMINMAX \
+                    -DWIN32_LEAN_AND_MEAN
+
+    if ($cxx.target.system != 'mingw32')
+    {
+      cxx.libs += rpcrt4.lib dbghelp.lib
+    }
+  }
+}
+
+for n: $macos_mm
+{
+  obje{$(n).o}: mm{$n}
+}
+
+exe{crashpad_util_test}: obje{$macos_mm}:  include = ($cxx.target.class == 'macos')
+
+libue{meta}: $libs
+
+obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libue{meta})
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base" "-I$src_base"                             \
+              --what=header --default-type=h                           \
+              --update-exclude libue{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
+# TODO Support HTTPTransport tests, it requires cpphttplib
+# TODO Investigate why AlignedAllocatorDeathTest.BadAlignment fails.
+# TODO FileReaderHTTPBodyStream/HTTPMultipartBuilder/VariableBufferSize Fails because it requies test data.
+# Disable GetFileSize/GetDirectorySize, CI server lacks required privilege.
+exe{crashpad_util_test}: test.options = "--gtest_filter=-\
+*HTTPTransport/HTTPTransport*:\
+AlignedAllocatorDeathTest.BadAlignment:\
+LoaderLock.Detected:\
+GetFunction.GetFunction:\
+FileReaderHTTPBodyStream*:\
+HTTPMultipartBuilder*:\
+VariableBufferSize*:\
+Filesystem.GetFileSize:\
+Filesystem.GetDirectorySize"

@@ -1,0 +1,18 @@
+: 1
+name: crashpad-tests
+version: 0.8.0
+project: crashpad
+summary: Tests package for crashpad library
+license: Apache-2.0 license
+description-file: README.md
+url: https://chromium.googlesource.com/crashpad/crashpad
+
+builds: default
+builds: -freebsd          ; FreeBSD is not supported by upstream.
+builds: -( +macos &gcc )  ; Homebrew GCC is not supported by upstream.
+
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: gtest ^1.11.0
+depends: gmock ^1.11.0
+depends: mini_chromium ^0.1.0

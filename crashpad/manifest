@@ -1,0 +1,22 @@
+: 1
+name: crashpad
+version: 0.8.0
+summary: Crashpad is a crash-reporting system.
+license: Apache-2.0 license
+description-file: README.md
+url: https://chromium.googlesource.com/crashpad/crashpad
+
+builds: default
+builds: -freebsd          ; FreeBSD is not supported by upstream.
+builds: -( +macos &gcc )  ; Homebrew GCC is not supported by upstream.
+builds: -( +windows &gcc ) ; MinGW GCC is not supported.
+build-include: *-msvc*-static*
+build-exclude: *-*msvc** ; Builds only as static lib with msvc.
+build-exclude: **/**-emscripten  ;
+
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: mini_chromium ^0.1.0
+depends: libz ^1.2.12
+depends: libcurl ^7.84.0 ? ($cxx.target.class == 'linux')
+tests: crashpad-tests == $

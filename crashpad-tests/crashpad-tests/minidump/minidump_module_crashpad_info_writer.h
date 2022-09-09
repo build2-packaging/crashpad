@@ -1,0 +1,1 @@
+../../../upstream/minidump/minidump_module_crashpad_info_writer.h
