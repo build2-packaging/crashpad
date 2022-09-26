@@ -30,7 +30,10 @@ exe{crashpad_handler_test}: {cxx}{$linux_source}: include = ($cxx.target.class =
 exe{crashpad_handler_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
 exe{crashpad_handler_test}: {cxx}{../test/gtest_main}
 exe{crashpad_handler_test}: $libs
-exe{crashpad_handler_test}: exe{crashpad_handler_test_extended_handler}: include = ($cxx.target.class == 'windows')
+if ($cxx.target.class == 'windows')
+{
+  exe{crashpad_handler_test}: exe{crashpad_handler_test_extended_handler}: test.input = true
+}
 exe{crashpad_handler_test}: test = true
 
 exe{crashpad_handler_test_extended_handler}: {cxx}{crashpad_handler_test_extended_handler}

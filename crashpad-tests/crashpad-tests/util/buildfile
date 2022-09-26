@@ -129,8 +129,11 @@ exe{crashpad_util_test}: {cxx}{$macos_source}: include = ($cxx.target.class == '
 exe{crashpad_util_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
 exe{crashpad_util_test}: {cxx}{../test/gtest_main}
 
-exe{crashpad_util_test}: exe{crashpad_util_test_process_info_test_child}: include = ($cxx.target.class == 'windows')
-exe{crashpad_util_test}: exe{crashpad_util_test_safe_terminate_process_test_child}: include = ($cxx.target.class == 'windows')
+if ($cxx.target.class == 'windows')
+{
+  exe{crashpad_util_test}: exe{crashpad_util_test_process_info_test_child}: test.input = true
+  exe{crashpad_util_test}: exe{crashpad_util_test_safe_terminate_process_test_child}: test.input = true
+}
 exe{crashpad_util_test}: $libs
 
 exe{crashpad_util_test_process_info_test_child}: {cxx}{win/process_info_test_child}: include = ($cxx.target.class == 'windows')

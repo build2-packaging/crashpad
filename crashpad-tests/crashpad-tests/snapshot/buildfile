@@ -83,12 +83,18 @@ exe{crashpad_snapshot_test}: {cxx}{$win_source}: include = ($cxx.target.class ==
 exe{crashpad_snapshot_test}: {cxx}{../test/gtest_main}
 
 exe{crashpad_snapshot_test}: lib{snapshot_test_support} $libs
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_annotations}: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_crashing_child}: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_dump_without_crashing}: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_extra_memory_ranges}: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_image_reader}: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_no_op}: include = ($cxx.target.class == 'macos')
+if ($cxx.target.class == 'windows')
+{
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_annotations}: test.input = true
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_crashing_child}: test.input = true
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_dump_without_crashing}: test.input = true
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_extra_memory_ranges}: test.input = true
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_image_reader}: test.input = true
+}
+elif ($cxx.target.class == 'macos')
+{
+  exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_no_op}: test.input = true
+}
 exe{crashpad_snapshot_test}: test = true
 
 lib{snapshot_test_support}: {hxx}{$snapshot_test_support_common_header} {cxx}{$snapshot_test_support_common_source} $impl_libs $intf_libs
