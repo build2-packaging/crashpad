@@ -408,7 +408,6 @@ switch $cxx.target.class
   }
 }
 
-#TODO Fix assembly stuff for windows, see https://github.com/chromium/crashpad/blob/6278690abe6ef0dda047e67dc1d0c49ce7af3811/util/BUILD.gn#L526-L543
 enable_assembly = (($cxx.target.class == 'macos') || ($cxx.target.class == 'linux'))
 if ($enable_assembly)
 {

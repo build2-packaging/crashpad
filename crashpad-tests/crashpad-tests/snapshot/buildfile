@@ -88,6 +88,7 @@ exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_crashing_child}: include
 exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_dump_without_crashing}: include = ($cxx.target.class == 'windows')
 exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_extra_memory_ranges}: include = ($cxx.target.class == 'windows')
 exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_image_reader}: include = ($cxx.target.class == 'windows')
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_no_op}: include = ($cxx.target.class == 'macos')
 exe{crashpad_snapshot_test}: test = true
 
 lib{snapshot_test_support}: {hxx}{$snapshot_test_support_common_header} {cxx}{$snapshot_test_support_common_source} $impl_libs $intf_libs
@@ -106,6 +107,9 @@ exe{crashpad_snapshot_test_extra_memory_ranges}: $libs: include = ($cxx.target.c
 
 exe{crashpad_snapshot_test_image_reader}: {cxx}{win/crashpad_snapshot_test_image_reader}: include = ($cxx.target.class == 'windows')
 exe{crashpad_snapshot_test_image_reader}: $libs: include = ($cxx.target.class == 'windows')
+
+exe{crashpad_snapshot_test_no_op}: {cxx}{mac/mach_o_image_annotations_reader_test_no_op}: include = ($cxx.target.class == 'macos')
+exe{crashpad_snapshot_test_no_op}: $libs: include = ($cxx.target.class == 'macos')
 
 cxx.poptions += "-I$src_root"/crashpad-tests
 cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
@@ -176,6 +180,18 @@ exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
 PEImageReader.DebugDirectory:\
 ProcessSnapshotTest.CrashpadInfoChild:\
 SystemSnapshotWinTest.TimeZone:\
+CrashpadInfoClientOptions.TwoModules:\
+CrashpadInfoSizes_ClientOptions*"
+}
+
+# Requires more data dependencies which I have skipped for now.
+if ($cxx.target.class == 'macos')
+{
+exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+MachOImageAnnotationsReader.CrashModuleInitialization:\
+MachOImageAnnotationsReader.CrashDyld:\
+ProcessReaderMac.SelfModules:\
+ProcessReaderMac.ChildModules:\
 CrashpadInfoClientOptions.TwoModules:\
 CrashpadInfoSizes_ClientOptions*"
 }
