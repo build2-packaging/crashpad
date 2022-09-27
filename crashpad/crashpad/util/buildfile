@@ -400,10 +400,10 @@ switch $cxx.target.class
                     -DNOMINMAX \
                     -DWIN32_LEAN_AND_MEAN
 
-    #TODO Check if user32.lib/winhttp.lib are not automatically and are required to be specifed here.
+    #TODO Check if user32.lib are not automatically and are required to be specifed here.
     if ($cxx.target.system != 'mingw32')
     {
-      cxx.libs += mincore.lib Advapi32.lib
+      cxx.libs += version.lib Advapi32.lib winhttp.lib
     }
   }
 }
