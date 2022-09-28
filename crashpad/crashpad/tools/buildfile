@@ -21,6 +21,8 @@ http_upload_libs += ../util/lib{net}
 generate_dump_libs += ../minidump/lib{minidump}
 generate_dump_libs += ../snapshot/lib{snapshot}
 
+run_with_crashpad_libs += ../client/lib{client}
+
 ./: lib{tool_support} exe{crashpad_database_util} exe{crashpad_http_upload} exe{base94_encoder} exe{generate_dump}
 ./: exe{run_with_crashpad} exe{catch_exception_tool} exe{exception_port_tool} exe{on_demand_service_tool}: include = ($cxx.target.class == 'macos')
 
