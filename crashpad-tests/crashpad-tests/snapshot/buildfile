@@ -125,10 +125,6 @@ switch $cxx.target.class
   case 'windows'
   {
     cxx.libs = rpcrt4.lib
-    cxx.poptions += -DUNICODE  \
-                    -D_UNICODE \
-                    -DNOMINMAX \
-                    -DWIN32_LEAN_AND_MEAN
   }
 }
 

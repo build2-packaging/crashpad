@@ -85,14 +85,6 @@ exe{crashpad_handler}: ../client/lib{pthread_create}: include = ($cxx.target.cla
 # Build options.
 cxx.poptions =+ "-I$src_root"/crashpad
 
-if ($cxx.target.class == 'windows')
-{
-  cxx.poptions += -DUNICODE  \
-                  -D_UNICODE \
-                  -DNOMINMAX \
-                  -DWIN32_LEAN_AND_MEAN
-}
-
 if($cxx.target.system == 'win32-msvc')
 {
   exe{crashpad_handler}: cxx.loptions += '/subsystem:windows'

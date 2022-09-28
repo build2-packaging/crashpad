@@ -80,17 +80,6 @@ lib{minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $i
 # Build options.
 cxx.poptions =+ "-I$src_root"/crashpad
 
-switch $cxx.target.class
-{
-  case 'windows'
-  {
-    cxx.poptions += -DUNICODE  \
-                    -D_UNICODE \
-                    -DNOMINMAX \
-                    -DWIN32_LEAN_AND_MEAN
-  }
-}
-
 # format export options.
 #
 lib{format}:

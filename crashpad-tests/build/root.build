@@ -21,3 +21,13 @@ hxx{*}: cxx.importable = true
 # The test target for cross-testing (running tests under Wine, etc).
 #
 test.target = $cxx.target
+
+# Since all targets upstream depend on mini_chromium,
+# we might as well add this here.
+if ($cxx.target.class == 'windows')
+{
+  cxx.poptions += -DUNICODE  \
+                  -D_UNICODE \
+                  -DNOMINMAX \
+                  -DWIN32_LEAN_AND_MEAN
+}

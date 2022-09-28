@@ -153,11 +153,6 @@ switch $cxx.target.class
   }
   case 'windows'
   {
-    cxx.poptions += -DUNICODE  \
-                    -D_UNICODE \
-                    -DNOMINMAX \
-                    -DWIN32_LEAN_AND_MEAN
-
     if ($cxx.target.system != 'mingw32')
     {
       cxx.libs += rpcrt4.lib dbghelp.lib

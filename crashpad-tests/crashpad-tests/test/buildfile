@@ -89,13 +89,6 @@ switch $cxx.target.class
   {
     cxx.libs += -lbsm
   }
-  case 'windows'
-  {
-    cxx.poptions += -DUNICODE  \
-                    -D_UNICODE \
-                    -DNOMINMAX \
-                    -DWIN32_LEAN_AND_MEAN
-  }
 }
 
 cxx.poptions =+ "-I$out_root" "-I$src_root"/crashpad-tests

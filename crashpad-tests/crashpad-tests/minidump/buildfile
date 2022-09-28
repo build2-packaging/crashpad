@@ -65,14 +65,6 @@ lib{minidump_test_support}: {hxx}{$minidump_test_support_common_header} {cxx}{$m
 cxx.poptions += "-I$src_root"/crashpad-tests
 cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
 
-if ($cxx.target.class == 'windows')
-{
-  cxx.poptions += -DUNICODE  \
-                  -D_UNICODE \
-                  -DNOMINMAX \
-                  -DWIN32_LEAN_AND_MEAN
-}
-
 # minidump test support export options.
 #
 lib{minidump_test_support}:

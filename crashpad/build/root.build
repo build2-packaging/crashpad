@@ -17,3 +17,13 @@ mm{*}: extension = mm
 # Assume headers are importable unless stated otherwise.
 #
 hxx{*}: cxx.importable = true
+
+# Since all targets upstream depend on mini_chromium,
+# we might as well add this here.
+if ($cxx.target.class == 'windows')
+{
+  cxx.poptions += -DUNICODE  \
+                  -D_UNICODE \
+                  -DNOMINMAX \
+                  -DWIN32_LEAN_AND_MEAN
+}

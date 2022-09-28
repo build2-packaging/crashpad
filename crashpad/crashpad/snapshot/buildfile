@@ -203,11 +203,6 @@ switch $cxx.target.class
 {
   case 'windows'
   {
-    cxx.poptions += -DUNICODE  \
-                    -D_UNICODE \
-                    -DNOMINMAX \
-                    -DWIN32_LEAN_AND_MEAN
-
     #TODO Check if powrprof.lib is required to be specifed here.
     if ($cxx.target.system != 'mingw32')
     {
