@@ -208,15 +208,7 @@ util_mac_headers =    mac/xattr \
                       mach/notify_server \
                       mach/scoped_task_suspend \
                       mach/task_for_pid \
-                      process/process_memory_mac \
-                      mach/exc \
-                      mach/excServer \
-                      mach/mach_exc \
-                      mach/mach_excServer \
-                      mach/notify \
-                      mach/notifyServer \
-                      mach/child_port \
-                      mach/child_portServer
+                      process/process_memory_mac
 
 util_mac_source =     mac/xattr \
                       mach/composite_mach_message_server \
@@ -242,15 +234,7 @@ util_mac_source =     mac/xattr \
                       mach/scoped_task_suspend \
                       mach/task_for_pid \
                       posix/process_info_mac \
-                      process/process_memory_mac \
-                      mach/excUser \
-                      mach/excServer \
-                      mach/mach_excUser \
-                      mach/mach_excServer \
-                      mach/notifyUser \
-                      mach/notifyServer \
-                      mach/child_portUser \
-                      mach/child_portServer
+                      process/process_memory_mac
 
 util_macos_mm =       mac/launchd
 
@@ -577,6 +561,8 @@ extern "C" {
 }
 #endif' >> $server_header_path
   }}
+
+  lib{util}: {hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}
 }
 
 # Install into the crashpad/ subdirectory of, say, /usr/include/
