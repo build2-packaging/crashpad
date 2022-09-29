@@ -405,13 +405,13 @@ switch $cxx.target.class
 
 for f: $assembly_source
 {
-    obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
+    misc/obja{$name($f)...a.o} misc/objs{$name($f)...so.o}: $f
     {{
         diag as $>
         $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/crashpad
     }}
 
-    lib{util}: file{$f} obj{$name($f)}
+    lib{util}: file{$f} misc/obj{$name($f)}
 }
 
 for f: $assembly_source_win
@@ -441,14 +441,14 @@ libs{net}: objs{$regex.apply($net_macos_mm,'(.+)','\1.so.o')}: include = ($cxx.t
 
 libul{meta}: $intf_libs
 
-obja{~'/(.*).a/'}: mm{~'/\1/'} libul{meta}
+obja{~'/(.*).a/'}: mm{~'/\1/'} libua{meta}
 {{
-  lib_poptions = $cxx.lib_poptions(libul{meta})
+  lib_poptions = $cxx.lib_poptions(libua{meta}, obja)
   depdb hash $lib_poptions
 
   depdb dyndep "-I$out_base" "-I$src_base"                             \
               --what=header --default-type=h                           \
-              --update-exclude libul{meta}                             \
+              --update-exclude libua{meta}                             \
               -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
               $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
   diag obj-c++ ($<[0])
@@ -457,14 +457,14 @@ obja{~'/(.*).a/'}: mm{~'/\1/'} libul{meta}
             -o $path($>) -c -x objective-c++ $path($<[0])
 }}
 
-objs{~'/(.*).so/'}: mm{~'/\1/'} libul{meta}
+objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
 {{
-  lib_poptions = $cxx.lib_poptions(libul{meta})
+  lib_poptions = $cxx.lib_poptions(libus{meta}, objs)
   depdb hash $lib_poptions
 
   depdb dyndep "-I$out_base" "-I$src_base"                             \
               --what=header --default-type=h                           \
-              --update-exclude libul{meta}                             \
+              --update-exclude libus{meta}                             \
               -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
               $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
   diag obj-c++ ($<[0])

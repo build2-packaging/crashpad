@@ -52,7 +52,7 @@ libue{meta}: $common_libs
 
 obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
 {{
-  lib_poptions = $cxx.lib_poptions(libue{meta})
+  lib_poptions = $cxx.lib_poptions(libue{meta}, obje)
   depdb hash $lib_poptions
 
   depdb dyndep "-I$out_base" "-I$src_base"                             \
