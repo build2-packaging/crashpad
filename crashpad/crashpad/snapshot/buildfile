@@ -106,13 +106,15 @@ snapshot_macos_source   = mac/cpu_context_mac \
                           mac/thread_snapshot_mac \
                           mac/process_types/custom
 
-snapshot_macos_files =    mac/process_types/all.proctype \
-                          mac/process_types/annotation.proctype \
-                          mac/process_types/crashpad_info.proctype \
-                          mac/process_types/crashreporterclient.proctype \
-                          mac/process_types/dyld_images.proctype \
-                          mac/process_types/loader.proctype \
-                          mac/process_types/nlist.proctype
+define proctype: file
+proctype{*}: extension = proctype
+snapshot_macos_files =    mac/process_types/all \
+                          mac/process_types/annotation \
+                          mac/process_types/crashpad_info \
+                          mac/process_types/crashreporterclient \
+                          mac/process_types/dyld_images \
+                          mac/process_types/loader \
+                          mac/process_types/nlist
 
 snapshot_linux_headers  = linux/capture_memory_delegate_linux \
                           linux/cpu_context_linux \
@@ -191,7 +193,7 @@ lib{context}: {hxx}{$context_common_headers} {cxx}{$context_common_source} $impl
 
 lib{snapshot}: {hxx}{$snapshot_common_headers} {cxx}{$snapshot_common_source}
 lib{snapshot}: {hxx}{$snapshot_posix_headers} {cxx}{$snapshot_posix_source}: include = ($cxx.target.class != 'windows')
-lib{snapshot}: {hxx}{$snapshot_macos_headers} {cxx}{$snapshot_macos_source} {file}{$snapshot_macos_files}: include = ($cxx.target.class == 'macos')
+lib{snapshot}: {hxx}{$snapshot_macos_headers} {cxx}{$snapshot_macos_source} {proctype}{$snapshot_macos_files}: include = ($cxx.target.class == 'macos')
 lib{snapshot}: {hxx}{$snapshot_linux_headers} {cxx}{$snapshot_linux_source}: include = ($cxx.target.class == 'linux')
 lib{snapshot}: {hxx}{$snapshot_win_headers} {cxx}{$snapshot_win_source}: include = ($cxx.target.class == 'windows')
 lib{snapshot}: $impl_libs $intf_libs $snapshot_impl_libs $snapshot_intf_libs lib{context}
@@ -230,7 +232,7 @@ lib{snapshot}:
 # Install into the crashpad/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
-{hxx ixx txx}{*}:
+{hxx ixx txx proctype}{*}:
 {
   install         = include/crashpad/snapshot/
   install.subdirs = true
