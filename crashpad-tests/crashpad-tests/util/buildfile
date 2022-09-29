@@ -198,4 +198,5 @@ FileReaderHTTPBodyStream*:\
 HTTPMultipartBuilder*:\
 VariableBufferSize*:\
 Filesystem.GetFileSize:\
-Filesystem.GetDirectorySize"
+Filesystem.GetDirectorySize:\
+ProcessInfo.Forked"
