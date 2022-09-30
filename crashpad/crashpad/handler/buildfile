@@ -18,6 +18,10 @@ handler_impl_libs += lib{handler_common}
 handler_impl_libs += ../minidump/lib{minidump}
 handler_impl_libs += ../tools/lib{tool_support}
 
+handler_exe_impl_libs += lib{handler} 
+handler_exe_impl_libs += ../compat/lib{compat}
+handler_exe_impl_libs += ../tools/lib{tool_support}
+
 libcommon_common_headers =  crash_report_upload_thread \
                             minidump_to_upload_parameters
    
@@ -58,8 +62,10 @@ libhandler_win_source =     win/crash_report_exception_handler
 
 include ../third_party/getopt/
 
-./: lib{handler} lib{handler_common} exe{crashpad_handler}
-#./: file{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
+crash_handler_exe = ($cxx.target.class == 'windows' ? crash_handler.exe : crash_handler)
+
+./: lib{handler} lib{handler_common} exe{$crash_handler_exe}
+./: exe{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
 
 lib{handler_common}: {hxx}{$libcommon_common_headers} {cxx}{$libcommon_common_source}
 lib{handler_common}: {hxx}{$libcommon_macos_headers} {cxx}{$libcommon_macos_source}: include = ($cxx.target.class == 'macos')
@@ -71,24 +77,17 @@ lib{handler}: {hxx}{$libhandler_macos_header} {cxx}{$libhandler_macos_source}: i
 lib{handler}: {hxx}{$libhandler_win_header} {cxx}{$libhandler_win_source} ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
 lib{handler}: $impl_libs $intf_libs $handler_intf_libs $handler_impl_libs
 
-exe{crashpad_handler}: {cxx}{main} $impl_libs $intf_libs lib{handler} ../compat/lib{compat} ../tools/lib{tool_support}
+exe{$crash_handler_exe}: {cxx}{main} $impl_libs $intf_libs $handler_exe_impl_libs
 exe{crashpad_handler}: ../client/lib{pthread_create}: include = ($cxx.target.class == 'linux')
-
-# TODO: Figure out how to propery set this up so it gets installed correctly.
-#exe{crashpad_handler_com.com}: {cxx}{main} $impl_libs $intf_libs lib{handler} ../compat/lib{compat} ../tools/lib{tool_support}: include = ($cxx.target.class == 'windows')
-#file{crashpad_handler.com}: exe{crashpad_handler_com.com}
-#{{
-#    diag cp $path($<) $path($>)
-#    cp $path($<) $path($>)
-#}}
+exe{crashpad_handler.com}: {cxx}{main} $impl_libs $intf_libs $handler_exe_impl_libs: include = ($cxx.target.class == 'windows')
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/crashpad
 
 if($cxx.target.system == 'win32-msvc')
 {
-  exe{crashpad_handler}: cxx.loptions += '/subsystem:windows'
-  exe{crashpad_handler_com.com}: cxx.loptions += '/subsystem:console'
+  exe{$crash_handler_exe}: cxx.loptions += '/subsystem:windows'
+  exe{crashpad_handler.com}: cxx.loptions += '/subsystem:console'
 }
 
 # common export options.
