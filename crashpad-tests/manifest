@@ -18,7 +18,7 @@ build-exclude: **/**-emscripten  ;
 
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
-depends: * crashpad-handler == $
+depends: crashpad-handler == $
 depends: gtest ^1.11.0
 depends: gmock ^1.11.0
 depends: mini_chromium ^0.1.0
