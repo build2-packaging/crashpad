@@ -1,10 +1,11 @@
 : 1
 name: crashpad
 version: 0.8.0
-summary: Crashpad is a crash-reporting system.
-license: Apache-2.0 license
+summary: Chromium crash-reporting system
+license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad
+package-url: https://github.com/build2-packaging/crashpad
 
 builds: default
 builds: -freebsd          ; FreeBSD is not supported by upstream.

@@ -17,6 +17,10 @@
 # Use `binary` to make sure certain files are never auto-detected as text.
 #
 #*.png binary
+
+# @@ This seems incomplete (there are more symlinks in third_party/).
+#     Run `find . -type l -xtype d`.
+#
 crashpad/crashpad/third_party/zlib symlink=dir
 
 crashpad/crashpad/util/fuchsia symlink=dir

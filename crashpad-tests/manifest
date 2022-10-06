@@ -3,9 +3,10 @@ name: crashpad-tests
 version: 0.8.0
 project: crashpad
 summary: Tests package for crashpad library
-license: Apache-2.0 license
+license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad
+package-url: https://github.com/build2-packaging/crashpad
 
 builds: default
 builds: -freebsd          ; FreeBSD is not supported by upstream.
