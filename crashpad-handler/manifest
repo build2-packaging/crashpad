@@ -19,3 +19,4 @@ build-exclude: **/**-emscripten  ;
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
 depends: mini_chromium ^0.1.0
+depends: libcrashpad == $
