@@ -1,0 +1,29 @@
+import libs += mini_chromium%lib{mini_chromium}
+import libs += libcrashpad%lib{build}
+import libs += libcrashpad%lib{util}
+import libs += libcrashpad%lib{net}
+import libs += libcrashpad%lib{client_common}
+import libs += libcrashpad%lib{snapshot}
+import libs += libcrashpad%lib{handler} 
+import libs += libcrashpad%lib{compat}
+import libs += libcrashpad%lib{tool_support}
+if ($cxx.target.class == 'linux')
+{
+  import libs += libcrashpad%lib{pthread_create}
+}
+
+crash_handler_exe = ($cxx.target.class == 'windows' ? crash_handler.exe : crash_handler)
+
+./: exe{$crash_handler_exe}
+./: exe{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
+
+exe{$crash_handler_exe}: {cxx}{main} $libs
+exe{crashpad_handler.com}: {cxx}{main} $libs: include = ($cxx.target.class == 'windows')
+
+cxx.poptions =+ "-I$out_root" "-I$src_root"
+
+if($cxx.target.system == 'win32-msvc')
+{
+  exe{$crash_handler_exe}: cxx.loptions += '/subsystem:windows'
+  exe{crashpad_handler.com}: cxx.loptions += '/subsystem:console'
+}

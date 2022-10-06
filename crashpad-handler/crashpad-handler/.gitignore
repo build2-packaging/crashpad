@@ -1,0 +1,5 @@
+crashpad-handler
+
+# Testscript output directory (can be symlink).
+#
+test-crashpad-handler
