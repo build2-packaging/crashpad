@@ -1,6 +1,6 @@
 tgt = $import.target
 
-if ($tgt == lib{build})
+if ($tgt == lib{crashpad_build})
 {
   $out_root/
   {
@@ -8,7 +8,7 @@ if ($tgt == lib{build})
   }
   export $out_root/libcrashpad/build/$import.target
 }
-elif ($tgt == lib{client} || $tgt == lib{client_common} || $tgt == lib{pthread_create})
+elif ($tgt == lib{crashpad_client} || $tgt == lib{crashpad_client_common} || $tgt == lib{crashpad_pthread_create})
 {
   $out_root/
   {
@@ -16,7 +16,7 @@ elif ($tgt == lib{client} || $tgt == lib{client_common} || $tgt == lib{pthread_c
   }
   export $out_root/libcrashpad/client/$import.target
 }
-elif ($tgt == lib{compat})
+elif ($tgt == lib{crashpad_compat})
 {
   $out_root/
   {
@@ -24,7 +24,7 @@ elif ($tgt == lib{compat})
   }
   export $out_root/libcrashpad/compat/$import.target
 }
-elif ($tgt == lib{handler_common} || $tgt == lib{handler} || $tgt == exe{libcrashpad_handler})
+elif ($tgt == lib{crashpad_handler_common} || $tgt == lib{crashpad_handler} || $tgt == exe{libcrashpad_handler})
 {
   $out_root/
   {
@@ -32,7 +32,7 @@ elif ($tgt == lib{handler_common} || $tgt == lib{handler} || $tgt == exe{libcras
   }
   export $out_root/libcrashpad/handler/$import.target
 }
-elif ($tgt == lib{minidump} || $tgt == lib{format})
+elif ($tgt == lib{crashpad_minidump} || $tgt == lib{crashpad_format})
 {
   $out_root/
   {
@@ -40,7 +40,7 @@ elif ($tgt == lib{minidump} || $tgt == lib{format})
   }
   export $out_root/libcrashpad/minidump/$import.target
 }
-elif ($tgt == lib{snapshot} || $tgt == lib{context})
+elif ($tgt == lib{crashpad_snapshot} || $tgt == lib{crashpad_context})
 {
   $out_root/
   {
@@ -48,7 +48,7 @@ elif ($tgt == lib{snapshot} || $tgt == lib{context})
   }
   export $out_root/libcrashpad/snapshot/$import.target
 }
-elif ($tgt == lib{tool_support})
+elif ($tgt == lib{crashpad_tool_support})
 {
   $out_root/
   {
@@ -56,7 +56,7 @@ elif ($tgt == lib{tool_support})
   }
   export $out_root/libcrashpad/tools/$import.target
 }
-elif ($tgt == lib{util} || $tgt == lib{net})
+elif ($tgt == lib{crashpad_util} || $tgt == lib{crashpad_net})
 {
   $out_root/
   {

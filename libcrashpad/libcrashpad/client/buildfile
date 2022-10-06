@@ -2,8 +2,8 @@ import intf_libs += mini_chromium%lib{mini_chromium}
 
 include ../util/
 include ../build/
-intf_libs += ../util/lib{util}
-intf_libs += ../build/lib{build}
+intf_libs += ../util/lib{crashpad_util}
+intf_libs += ../build/lib{crashpad_build}
 
 libcommon_common_header = annotation \
                           annotation_list \
@@ -45,21 +45,21 @@ client_win_header       = simulate_crash_win
 client_win_source       = crashpad_client_win
 
 
-./: lib{client} lib{client_common}
-./: lib{pthread_create}: include = ($cxx.target.class == 'linux')
+./: lib{crashpad_client} lib{crashpad_client_common}
+./: lib{crashpad_pthread_create}: include = ($cxx.target.class == 'linux')
 
-lib{client_common}: {hxx}{$libcommon_common_header} {cxx}{$libcommon_common_source}
-lib{client_common}: {cxx}{$libcommon_linux_source}: include = ($cxx.target.class == 'linux')
-lib{client_common}: {cxx}{$libcommon_win_source}: include = ($cxx.target.class == 'windows')
-lib{client_common}: $impl_libs $intf_libs
+lib{crashpad_client_common}: {hxx}{$libcommon_common_header} {cxx}{$libcommon_common_source}
+lib{crashpad_client_common}: {cxx}{$libcommon_linux_source}: include = ($cxx.target.class == 'linux')
+lib{crashpad_client_common}: {cxx}{$libcommon_win_source}: include = ($cxx.target.class == 'windows')
+lib{crashpad_client_common}: $impl_libs $intf_libs
 
-lib{client}: {hxx}{$client_common_header} {cxx}{$client_common_source}
-lib{client}: {hxx}{$client_linux_header} {cxx}{$client_linux_source}: include = ($cxx.target.class == 'linux')
-lib{client}: {hxx}{$client_mac_header} {cxx}{$client_mac_source}: include = ($cxx.target.class == 'macos')
-lib{client}: {hxx}{$client_win_header} {cxx}{$client_win_source}: include = ($cxx.target.class == 'windows')
-lib{client}: $impl_libs $intf_libs lib{client_common}
+lib{crashpad_client}: {hxx}{$client_common_header} {cxx}{$client_common_source}
+lib{crashpad_client}: {hxx}{$client_linux_header} {cxx}{$client_linux_source}: include = ($cxx.target.class == 'linux')
+lib{crashpad_client}: {hxx}{$client_mac_header} {cxx}{$client_mac_source}: include = ($cxx.target.class == 'macos')
+lib{crashpad_client}: {hxx}{$client_win_header} {cxx}{$client_win_source}: include = ($cxx.target.class == 'windows')
+lib{crashpad_client}: $impl_libs $intf_libs lib{crashpad_client_common}
 
-lib{pthread_create}: {cxx}{pthread_create_linux} lib{client}: include = ($cxx.target.class == 'linux')
+lib{crashpad_pthread_create}: {cxx}{pthread_create_linux} lib{crashpad_client}: include = ($cxx.target.class == 'linux')
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
@@ -70,21 +70,21 @@ if ($cxx.id == 'gcc')
 }
 
 # libcommon export options.
-lib{client_common}:
+lib{crashpad_client_common}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
 # client export options.
-lib{client}:
+lib{crashpad_client}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs lib{client_common}
+  cxx.export.libs = $intf_libs lib{crashpad_client_common}
 }
 
 # pthread_create export options.
-lib{pthread_create}:
+lib{crashpad_pthread_create}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
@@ -106,7 +106,7 @@ switch $cxx.target.class
 enable_assembly = ($cxx.target.class == 'linux')
 if ($enable_assembly)
 {
-    lib{client_common}: c.coptions += "-mbmi"
+    lib{crashpad_client_common}: c.coptions += "-mbmi"
 }
 
 switch $cxx.target.class
@@ -122,7 +122,7 @@ for f: $assembly_source
         diag as $>
         $cxx.path -o $path($>) -c $path($<[0])  "-I$src_root"/libcrashpad
     }}
-    lib{client_common}: file{$f} obj{$name($f)}: include = $enable_assembly
+    lib{crashpad_client_common}: file{$f} obj{$name($f)}: include = $enable_assembly
 }
 
 for n: $libcommon_mac_mm

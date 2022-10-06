@@ -3,13 +3,13 @@ import libs += gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 
-import libs += libcrashpad%lib{util}
-import libs += libcrashpad%lib{compat}
+import libs += libcrashpad%lib{crashpad_util}
+import libs += libcrashpad%lib{crashpad_compat}
 
 if ($cxx.target.class == 'macos')
 {
-  import libs += libcrashpad%lib{snapshot}
-  import libs += libcrashpad%lib{handler}
+  import libs += libcrashpad%lib{crashpad_snapshot}
+  import libs += libcrashpad%lib{crashpad_handler}
 }
 
 common_headers = errors \

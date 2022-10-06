@@ -5,13 +5,13 @@ include ../util/
 include ../snapshot/
 include ../build/
 
-intf_libs += ../build/lib{build}
-intf_libs += ../compat/lib{compat}
-impl_libs += ../snapshot/lib{context}
-impl_libs += ../util/lib{util}
+intf_libs += ../build/lib{crashpad_build}
+intf_libs += ../compat/lib{crashpad_compat}
+impl_libs += ../snapshot/lib{crashpad_context}
+impl_libs += ../util/lib{crashpad_util}
 
-minidump_intf_libs += lib{format}
-minidump_impl_libs += ../snapshot/lib{snapshot}
+minidump_intf_libs += lib{crashpad_format}
+minidump_impl_libs += ../snapshot/lib{crashpad_snapshot}
 
 format_common_headers   = minidump_context \
                           minidump_extensions
@@ -71,18 +71,18 @@ minidump_common_source  = minidump_annotation_writer \
                           minidump_writable \
                           minidump_writer_util
 
-./: lib{minidump} lib{format}
+./: lib{crashpad_minidump} lib{crashpad_format}
 
-lib{format}: {hxx}{$format_common_headers} {cxx}{$format_common_source} $impl_libs $intf_libs
+lib{crashpad_format}: {hxx}{$format_common_headers} {cxx}{$format_common_source} $impl_libs $intf_libs
 
-lib{minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $intf_libs $minidump_intf_libs $minidump_impl_libs
+lib{crashpad_minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $intf_libs $minidump_intf_libs $minidump_impl_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # format export options.
 #
-lib{format}:
+lib{crashpad_format}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
@@ -90,7 +90,7 @@ lib{format}:
 
 # minidump export options.
 #
-lib{minidump}:
+lib{crashpad_minidump}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs $minidump_intf_libs

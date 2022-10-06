@@ -5,8 +5,8 @@ if ($cxx.target.class == 'linux')
 
 include ../compat/
 include ../build/
-intf_libs += ../compat/lib{compat}
-intf_libs += ../build/lib{build}
+intf_libs += ../compat/lib{crashpad_compat}
+intf_libs += ../build/lib{crashpad_build}
 
 import no_cfi_icall_intf_libs += mini_chromium%lib{mini_chromium}
 
@@ -317,22 +317,22 @@ net_linux_source =    net/http_transport_libcurl
 
 net_win_source =      net/http_transport_win
 
-./: lib{util} lib{net} lib{no_cfi_icall}
+./: lib{crashpad_util} lib{crashpad_net} lib{crashpad_no_cfi_icall}
 
-lib{util}: {hxx}{$util_common_headers} {cxx}{$util_common_source}
-lib{util}: {hxx}{$util_posix_headers} {cxx}{$util_posix_source}: include = ($cxx.target.class != 'windows')
-lib{util}: {hxx}{$util_linux_headers} {cxx}{$util_linux_source}: include = ($cxx.target.class == 'linux')
-lib{util}: {hxx}{$util_mac_headers} {cxx}{$util_mac_source}: include = ($cxx.target.class == 'macos')
-lib{util}: {hxx}{$util_win_headers} {cxx}{$util_win_source}: include = ($cxx.target.class == 'windows')
-lib{util}: $impl_libs $intf_libs lib{no_cfi_icall}
+lib{crashpad_util}: {hxx}{$util_common_headers} {cxx}{$util_common_source}
+lib{crashpad_util}: {hxx}{$util_posix_headers} {cxx}{$util_posix_source}: include = ($cxx.target.class != 'windows')
+lib{crashpad_util}: {hxx}{$util_linux_headers} {cxx}{$util_linux_source}: include = ($cxx.target.class == 'linux')
+lib{crashpad_util}: {hxx}{$util_mac_headers} {cxx}{$util_mac_source}: include = ($cxx.target.class == 'macos')
+lib{crashpad_util}: {hxx}{$util_win_headers} {cxx}{$util_win_source}: include = ($cxx.target.class == 'windows')
+lib{crashpad_util}: $impl_libs $intf_libs lib{crashpad_no_cfi_icall}
 
-lib{net}: {hxx}{$net_common_headers} {cxx}{$net_common_source}
-lib{net}: {cxx}{$net_win_source}: include = ($cxx.target.class == 'windows')
-lib{net}: {cxx}{$net_linux_source}: include = ($cxx.target.class == 'linux')
-lib{net}: $impl_libs $intf_libs lib{util}
+lib{crashpad_net}: {hxx}{$net_common_headers} {cxx}{$net_common_source}
+lib{crashpad_net}: {cxx}{$net_win_source}: include = ($cxx.target.class == 'windows')
+lib{crashpad_net}: {cxx}{$net_linux_source}: include = ($cxx.target.class == 'linux')
+lib{crashpad_net}: $impl_libs $intf_libs lib{crashpad_util}
 
-lib{no_cfi_icall}: {hxx}{misc/no_cfi_icall}
-lib{no_cfi_icall}: $no_cfi_icall_intf_libs
+lib{crashpad_no_cfi_icall}: {hxx}{misc/no_cfi_icall}
+lib{crashpad_no_cfi_icall}: $no_cfi_icall_intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
@@ -343,21 +343,21 @@ if ($cxx.id == 'gcc')
 }
 
 # util export options.
-lib{util}:
+lib{crashpad_util}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
-  cxx.export.libs = $intf_libs lib{no_cfi_icall}
+  cxx.export.libs = $intf_libs lib{crashpad_no_cfi_icall}
 }
 
 # net export options.
-lib{net}:
+lib{crashpad_net}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
 # no_cfi_icall export options.
-lib{no_cfi_icall}:
+lib{crashpad_no_cfi_icall}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $no_cfi_icall_intf_libs
@@ -390,7 +390,7 @@ switch $cxx.target.class
 enable_assembly = (($cxx.target.class == 'macos') || ($cxx.target.class == 'linux'))
 if ($enable_assembly)
 {
-    lib{util}: cxx.coptions += "-mbmi"
+    lib{crashpad_util}: cxx.coptions += "-mbmi"
 }
 
 switch $cxx.target.class
@@ -411,7 +411,7 @@ for f: $assembly_source
         $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/libcrashpad
     }}
 
-    lib{util}: file{$f} misc/obj{$name($f)}
+    lib{crashpad_util}: file{$f} misc/obj{$name($f)}
 }
 
 for f: $assembly_source_win
@@ -424,7 +424,7 @@ for f: $assembly_source_win
         $ml /Fo $path($>) /c $path($<[0])
     }}
 
-    lib{util}: file{$f} obj{$name($f)}
+    lib{crashpad_util}: file{$f} obj{$name($f)}
 }
 
 for n: $util_macos_mm $net_macos_mm
@@ -562,7 +562,7 @@ extern "C" {
 #endif' >> $server_header_path
   }}
 
-  lib{util}: {hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}
+  lib{crashpad_util}: {hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}
 }
 
 # Install into the crashpad/ subdirectory of, say, /usr/include/

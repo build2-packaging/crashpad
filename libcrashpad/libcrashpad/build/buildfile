@@ -1,13 +1,13 @@
 import intf_libs += mini_chromium%lib{mini_chromium}
 
-lib{build}: {hxx}{chromeos_buildflags}
-lib{build}: $intf_libs
+lib{crashpad_build}: {hxx}{chromeos_buildflags}
+lib{crashpad_build}: $intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # util export options.
-lib{build}:
+lib{crashpad_build}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs

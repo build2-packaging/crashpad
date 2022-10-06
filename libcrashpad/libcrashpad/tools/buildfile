@@ -7,26 +7,26 @@ include ../util/
 include ../minidump/
 include ../snapshot/
 
-intf_libs += ../build/lib{build}
+intf_libs += ../build/lib{crashpad_build}
 
 common_libs += $intf_libs
-common_libs += lib{tool_support}
-common_libs += ../util/lib{util}
-common_libs += ../compat/lib{compat}
+common_libs += lib{crashpad_tool_support}
+common_libs += ../util/lib{crashpad_util}
+common_libs += ../compat/lib{crashpad_compat}
 
-database_util_libs += ../client/lib{client}
+database_util_libs += ../client/lib{crashpad_client}
 
-http_upload_libs += ../util/lib{net}
+http_upload_libs += ../util/lib{crashpad_net}
 
-generate_dump_libs += ../minidump/lib{minidump}
-generate_dump_libs += ../snapshot/lib{snapshot}
+generate_dump_libs += ../minidump/lib{crashpad_minidump}
+generate_dump_libs += ../snapshot/lib{crashpad_snapshot}
 
-run_with_crashpad_libs += ../client/lib{client}
+run_with_crashpad_libs += ../client/lib{crashpad_client}
 
-./: lib{tool_support} exe{crashpad_database_util} exe{crashpad_http_upload} exe{base94_encoder} exe{generate_dump}
+./: lib{crashpad_tool_support} exe{crashpad_database_util} exe{crashpad_http_upload} exe{base94_encoder} exe{generate_dump}
 ./: exe{run_with_crashpad} exe{catch_exception_tool} exe{exception_port_tool} exe{on_demand_service_tool}: include = ($cxx.target.class == 'macos')
 
-lib{tool_support}: {hxx}{tool_support ../package} {cxx}{tool_support} $impl_libs $intf_libs
+lib{crashpad_tool_support}: {hxx}{tool_support ../package} {cxx}{tool_support} $impl_libs $intf_libs
 
 exe{crashpad_database_util}: {cxx}{crashpad_database_util} $common_libs $database_util_libs
 exe{crashpad_http_upload}: {cxx}{crashpad_http_upload} $common_libs $http_upload_libs
@@ -70,7 +70,7 @@ obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
 cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # Export options.
-lib{tool_support}:
+lib{crashpad_tool_support}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs

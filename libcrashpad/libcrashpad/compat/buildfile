@@ -2,8 +2,8 @@ import intf_libs += mini_chromium%lib{mini_chromium}
 
 include ../build/
 include ../util/
-intf_libs += ../build/lib{build}
-impl_libs += ../util/lib{no_cfi_icall}
+intf_libs += ../build/lib{crashpad_build}
+impl_libs += ../util/lib{crashpad_no_cfi_icall}
 
 linux_headers =  linux/signal \
                  linux/sys/mman \
@@ -48,11 +48,11 @@ win_source =     win/strings \
 
 include ../third_party/getopt/
 
-lib{compat}: {hxx}{$linux_headers} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
-lib{compat}: {hxx}{$mac_headers} {cxx}{$mac_source}: include = ($cxx.target.class == 'macos')
-lib{compat}: {hxx}{$win_headers} {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
-lib{compat}: ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
-lib{compat}: $impl_libs $intf_libs
+lib{crashpad_compat}: {hxx}{$linux_headers} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
+lib{crashpad_compat}: {hxx}{$mac_headers} {cxx}{$mac_source}: include = ($cxx.target.class == 'macos')
+lib{crashpad_compat}: {hxx}{$win_headers} {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
+lib{crashpad_compat}: ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
+lib{crashpad_compat}: $impl_libs $intf_libs
 
 switch $cxx.target.class
 {
@@ -77,7 +77,7 @@ cxx.poptions =+ "-I$src_root"/libcrashpad $include_dirs
 
 # Export options.
 #
-lib{compat}:
+lib{crashpad_compat}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad $include_dirs
   cxx.export.libs = $intf_libs
@@ -86,11 +86,11 @@ lib{compat}:
 switch $cxx.target.class
 {
   case 'linux'
-    lib{compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/non_win include/crashpad/compat/linux
+    lib{crashpad_compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/non_win include/crashpad/compat/linux
   case 'macos'
-    lib{compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/non_win include/crashpad/compat/mac
+    lib{crashpad_compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/non_win include/crashpad/compat/mac
   case 'windows'
-    lib{compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/win
+    lib{crashpad_compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/win
 }
 
 # Install into the crashpad/ subdirectory of, say, /usr/include/
