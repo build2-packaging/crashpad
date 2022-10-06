@@ -4,3 +4,5 @@ location: libcrashpad/
 location: crashpad-tests/
 :
 location: crashpad-handler/
+:
+location: crashpad-tools/

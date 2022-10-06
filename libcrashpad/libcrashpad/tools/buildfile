@@ -1,70 +1,11 @@
 import intf_libs += mini_chromium%lib{mini_chromium}
 
-include ../client/
-include ../compat/
 include ../build/
-include ../util/
-include ../minidump/
-include ../snapshot/
-
 intf_libs += ../build/lib{crashpad_build}
 
-common_libs += $intf_libs
-common_libs += lib{crashpad_tool_support}
-common_libs += ../util/lib{crashpad_util}
-common_libs += ../compat/lib{crashpad_compat}
+./: lib{crashpad_tool_support}
 
-database_util_libs += ../client/lib{crashpad_client}
-
-http_upload_libs += ../util/lib{crashpad_net}
-
-generate_dump_libs += ../minidump/lib{crashpad_minidump}
-generate_dump_libs += ../snapshot/lib{crashpad_snapshot}
-
-run_with_crashpad_libs += ../client/lib{crashpad_client}
-
-./: lib{crashpad_tool_support} exe{crashpad_database_util} exe{crashpad_http_upload} exe{base94_encoder} exe{generate_dump}
-./: exe{run_with_crashpad} exe{catch_exception_tool} exe{exception_port_tool} exe{on_demand_service_tool}: include = ($cxx.target.class == 'macos')
-
-lib{crashpad_tool_support}: {hxx}{tool_support ../package} {cxx}{tool_support} $impl_libs $intf_libs
-
-exe{crashpad_database_util}: {cxx}{crashpad_database_util} $common_libs $database_util_libs
-exe{crashpad_http_upload}: {cxx}{crashpad_http_upload} $common_libs $http_upload_libs
-exe{base94_encoder}: {cxx}{base94_encoder} $common_libs
-exe{generate_dump}: {cxx}{generate_dump} $common_libs $generate_dump_libs
-
-# TODO: macos plist see https://github.com/chromium/crashpad/blob/cca548be8467ce9d6e854467b366ad3a00c487ee/tools/BUILD.gn#L84-L90
-exe{run_with_crashpad}: {cxx}{run_with_crashpad} $common_libs $run_with_crashpad_libs: include = ($cxx.target.class == 'macos')
-exe{catch_exception_tool}: {cxx}{mac/catch_exception_tool} $common_libs: include = ($cxx.target.class == 'macos')
-exe{exception_port_tool}: {cxx}{mac/exception_port_tool} $common_libs: include = ($cxx.target.class == 'macos')
-exe{on_demand_service_tool}: $common_libs: include = ($cxx.target.class == 'macos')
-
-if ($cxx.target.class == 'macos')
-{
-  cxx.libs += -framework CoreFoundation \
-              -framework Foundation
-}
-
-obje{mac/on_demand_service_tool.o}: mm{mac/on_demand_service_tool}
-exe{on_demand_service_tool}: obje{mac/on_demand_service_tool}:  include = ($cxx.target.class == 'macos')
-
-libue{meta}: $common_libs
-
-obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
-{{
-  lib_poptions = $cxx.lib_poptions(libue{meta}, obje)
-  depdb hash $lib_poptions
-
-  depdb dyndep "-I$out_base" "-I$src_base"                             \
-              --what=header --default-type=h                           \
-              --update-exclude libue{meta}                             \
-              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
-              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
-  diag obj-c++ ($<[0])
-  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
-            $cc.coptions $cxx.coptions $cxx.mode                        \
-            -o $path($>) -c -x objective-c++ $path($<[0])
-}}
+lib{crashpad_tool_support}: {hxx}{tool_support ../package} {cxx}{tool_support} $intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
@@ -78,7 +19,6 @@ lib{crashpad_tool_support}:
 
 # Install into the crashpad/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
-#
 {hxx ixx txx}{*}:
 {
   install         = include/crashpad/tools/

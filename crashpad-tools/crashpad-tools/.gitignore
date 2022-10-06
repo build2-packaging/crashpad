@@ -1,0 +1,5 @@
+crashpad-tools
+
+# Testscript output directory (can be symlink).
+#
+test-crashpad-tools

@@ -52,6 +52,7 @@ libcrashpad/libcrashpad/util/string symlink=dir
 libcrashpad/libcrashpad/util/synchronization symlink=dir
 libcrashpad/libcrashpad/util/thread symlink=dir
 libcrashpad/libcrashpad/util/win symlink=dir
+crashpad-tools/crashpad-tools/tools/mac symlink=dir
 
 crashpad-tests/crashpad-tests/handler/linux symlink=dir
 crashpad-tests/crashpad-tests/handler/mac symlink=dir
@@ -85,3 +86,4 @@ crashpad-tests/crashpad-tests/util/string symlink=dir
 crashpad-tests/crashpad-tests/util/synchronization symlink=dir
 crashpad-tests/crashpad-tests/util/thread symlink=dir
 crashpad-tests/crashpad-tests/util/win symlink=dir
+crashpad-tests/crashpad-tests/third_party/zlib symlink=dir
