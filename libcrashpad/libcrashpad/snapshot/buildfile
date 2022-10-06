@@ -199,7 +199,7 @@ lib{snapshot}: {hxx}{$snapshot_win_headers} {cxx}{$snapshot_win_source}: include
 lib{snapshot}: $impl_libs $intf_libs $snapshot_impl_libs $snapshot_intf_libs lib{context}
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 switch $cxx.target.class
 {
@@ -217,7 +217,7 @@ switch $cxx.target.class
 #
 lib{context}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
@@ -225,7 +225,7 @@ lib{context}:
 #
 lib{snapshot}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs $snapshot_intf_libs lib{context}
 }
 

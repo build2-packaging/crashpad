@@ -62,7 +62,7 @@ lib{client}: $impl_libs $intf_libs lib{client_common}
 lib{pthread_create}: {cxx}{pthread_create_linux} lib{client}: include = ($cxx.target.class == 'linux')
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 if ($cxx.id == 'gcc')
 {
@@ -72,21 +72,21 @@ if ($cxx.id == 'gcc')
 # libcommon export options.
 lib{client_common}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
 # client export options.
 lib{client}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs lib{client_common}
 }
 
 # pthread_create export options.
 lib{pthread_create}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
@@ -120,7 +120,7 @@ for f: $assembly_source
     obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
     {{
         diag as $>
-        $cxx.path -o $path($>) -c $path($<[0])  "-I$src_root"/crashpad
+        $cxx.path -o $path($>) -c $path($<[0])  "-I$src_root"/libcrashpad
     }}
     lib{client_common}: file{$f} obj{$name($f)}: include = $enable_assembly
 }

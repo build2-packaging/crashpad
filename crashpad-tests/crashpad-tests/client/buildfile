@@ -1,11 +1,11 @@
 import libs += gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
-import libs += crashpad%lib{client}
-import libs += crashpad%lib{compat}
-import libs += crashpad%lib{util}
-import libs += crashpad%lib{snapshot}
-import libs += crashpad%lib{context}
+import libs += libcrashpad%lib{client}
+import libs += libcrashpad%lib{compat}
+import libs += libcrashpad%lib{util}
+import libs += libcrashpad%lib{snapshot}
+import libs += libcrashpad%lib{context}
 
 include ../test/
 libs += ../test/lib{test}

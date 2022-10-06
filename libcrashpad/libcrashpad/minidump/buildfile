@@ -78,13 +78,13 @@ lib{format}: {hxx}{$format_common_headers} {cxx}{$format_common_source} $impl_li
 lib{minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $intf_libs $minidump_intf_libs $minidump_impl_libs
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # format export options.
 #
 lib{format}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
@@ -92,7 +92,7 @@ lib{format}:
 #
 lib{minidump}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs $minidump_intf_libs
 }
 

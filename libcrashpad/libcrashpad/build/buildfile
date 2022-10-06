@@ -4,12 +4,12 @@ lib{build}: {hxx}{chromeos_buildflags}
 lib{build}: $intf_libs
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # util export options.
 lib{build}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 

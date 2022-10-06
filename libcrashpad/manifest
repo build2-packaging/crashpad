@@ -1,5 +1,5 @@
 : 1
-name: crashpad
+name: libcrashpad
 version: 0.8.0
 summary: Chromium crash-reporting system
 license: Apache-2.0

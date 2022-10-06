@@ -1,0 +1,66 @@
+tgt = $import.target
+
+if ($tgt == lib{build})
+{
+  $out_root/
+  {
+    include libcrashpad/build/
+  }
+  export $out_root/libcrashpad/build/$import.target
+}
+elif ($tgt == lib{client} || $tgt == lib{client_common} || $tgt == lib{pthread_create})
+{
+  $out_root/
+  {
+    include libcrashpad/client/
+  }
+  export $out_root/libcrashpad/client/$import.target
+}
+elif ($tgt == lib{compat})
+{
+  $out_root/
+  {
+    include libcrashpad/compat/
+  }
+  export $out_root/libcrashpad/compat/$import.target
+}
+elif ($tgt == lib{handler_common} || $tgt == lib{handler} || $tgt == exe{libcrashpad_handler})
+{
+  $out_root/
+  {
+    include libcrashpad/handler/
+  }
+  export $out_root/libcrashpad/handler/$import.target
+}
+elif ($tgt == lib{minidump} || $tgt == lib{format})
+{
+  $out_root/
+  {
+    include libcrashpad/minidump/
+  }
+  export $out_root/libcrashpad/minidump/$import.target
+}
+elif ($tgt == lib{snapshot} || $tgt == lib{context})
+{
+  $out_root/
+  {
+    include libcrashpad/snapshot/
+  }
+  export $out_root/libcrashpad/snapshot/$import.target
+}
+elif ($tgt == lib{tool_support})
+{
+  $out_root/
+  {
+    include libcrashpad/tools/
+  }
+  export $out_root/libcrashpad/tools/$import.target
+}
+elif ($tgt == lib{util} || $tgt == lib{net})
+{
+  $out_root/
+  {
+    include libcrashpad/util/
+  }
+  export $out_root/libcrashpad/util/$import.target
+}

@@ -1,20 +1,20 @@
 import libs += gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
-import libs += crashpad%lib{client}
-import libs += crashpad%lib{client_common}
-import libs += crashpad%lib{compat}
-import libs += crashpad%lib{format}
-import libs += crashpad%lib{util}
+import libs += libcrashpad%lib{client}
+import libs += libcrashpad%lib{client_common}
+import libs += libcrashpad%lib{compat}
+import libs += libcrashpad%lib{format}
+import libs += libcrashpad%lib{util}
 
 include ../test/
 
 libs += ../test/lib{test}
 
 import impl_libs += mini_chromium%lib{mini_chromium}
-import impl_libs += crashpad%lib{compat}
-import impl_libs += crashpad%lib{util}
-import intf_libs += crashpad%lib{snapshot}
+import impl_libs += libcrashpad%lib{compat}
+import impl_libs += libcrashpad%lib{util}
+import intf_libs += libcrashpad%lib{snapshot}
 
 common_source =     cpu_context_test \
                     memory_snapshot_test \

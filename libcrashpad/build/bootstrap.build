@@ -1,4 +1,4 @@
-project = crashpad
+project = libcrashpad
 
 using version
 using config

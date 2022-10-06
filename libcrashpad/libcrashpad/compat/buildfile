@@ -59,27 +59,27 @@ switch $cxx.target.class
   case 'linux'
   {
     cxx.libs += -ldl
-    include_dirs += "-I$src_root"/crashpad/compat/linux "-I$src_root"/crashpad/compat/non_win
+    include_dirs += "-I$src_root"/libcrashpad/compat/linux "-I$src_root"/libcrashpad/compat/non_win
   }
   case 'macos'
   {
-    include_dirs += "-I$src_root"/crashpad/compat/mac "-I$src_root"/crashpad/compat/non_win
+    include_dirs += "-I$src_root"/libcrashpad/compat/mac "-I$src_root"/libcrashpad/compat/non_win
   }
   case 'windows'
   {
-    include_dirs += "-I$src_root"/crashpad/compat/win
+    include_dirs += "-I$src_root"/libcrashpad/compat/win
   }
 }
 
 # Build options.
 #
-cxx.poptions =+ "-I$src_root"/crashpad $include_dirs
+cxx.poptions =+ "-I$src_root"/libcrashpad $include_dirs
 
 # Export options.
 #
 lib{compat}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad $include_dirs
+  cxx.export.poptions = "-I$src_root"/libcrashpad $include_dirs
   cxx.export.libs = $intf_libs
 }
 

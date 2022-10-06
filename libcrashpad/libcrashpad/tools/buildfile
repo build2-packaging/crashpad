@@ -67,12 +67,12 @@ obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
 }}
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 # Export options.
 lib{tool_support}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 

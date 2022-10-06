@@ -82,7 +82,7 @@ exe{crashpad_handler}: ../client/lib{pthread_create}: include = ($cxx.target.cla
 exe{crashpad_handler.com}: {cxx}{main} $impl_libs $intf_libs $handler_exe_impl_libs: include = ($cxx.target.class == 'windows')
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/crashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad
 
 if($cxx.target.system == 'win32-msvc')
 {
@@ -93,14 +93,14 @@ if($cxx.target.system == 'win32-msvc')
 # common export options.
 lib{handler_common}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs
 }
 
 # libhandler export options.
 lib{handler}:
 {
-  cxx.export.poptions = "-I$src_root"/crashpad
+  cxx.export.poptions = "-I$src_root"/libcrashpad
   cxx.export.libs = $intf_libs $handler_intf_libs
 }
 
