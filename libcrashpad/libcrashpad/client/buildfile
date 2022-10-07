@@ -131,8 +131,8 @@ for n: $libcommon_mac_mm
   objs{$(n).so.o}: mm{$n}
 }
 
-liba{client_common}: obja{$regex.apply($libcommon_mac_mm,'(.+)','\1.a.o')}:  include = ($cxx.target.class == 'macos')
-libs{client_common}: objs{$regex.apply($libcommon_mac_mm,'(.+)','\1.so.o')}: include = ($cxx.target.class == 'macos')
+liba{crashpad_client_common}: obja{$regex.apply($libcommon_mac_mm,'(.+)','\1.a.o')}:  include = ($cxx.target.class == 'macos')
+libs{crashpad_client_common}: objs{$regex.apply($libcommon_mac_mm,'(.+)','\1.so.o')}: include = ($cxx.target.class == 'macos')
 
 libul{meta}: $intf_libs
 
