@@ -24,3 +24,5 @@ lib{crashpad_tool_support}:
   install         = include/crashpad/tools/
   install.subdirs = true
 }
+
+lib{crashpad_tool_support}: cxx.pkgconfig.include = include/crashpad/

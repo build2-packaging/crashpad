@@ -176,3 +176,7 @@ objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
   install         = include/crashpad/client/
   install.subdirs = true
 }
+
+lib{crashpad_client_common}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_client}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_pthread_create}: cxx.pkgconfig.include = include/crashpad/

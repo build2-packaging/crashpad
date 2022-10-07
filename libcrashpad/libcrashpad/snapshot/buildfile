@@ -237,3 +237,6 @@ lib{crashpad_snapshot}:
   install         = include/crashpad/snapshot/
   install.subdirs = true
 }
+
+lib{crashpad_context}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_snapshot}: cxx.pkgconfig.include = include/crashpad/

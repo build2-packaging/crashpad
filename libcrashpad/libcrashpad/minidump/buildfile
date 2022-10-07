@@ -104,3 +104,6 @@ lib{crashpad_minidump}:
   install         = include/crashpad/minidump/
   install.subdirs = true
 }
+
+lib{crashpad_format}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_minidump}: cxx.pkgconfig.include = include/crashpad/

@@ -2,7 +2,6 @@ import libs += gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_handler}
-import libs += libcrashpad%lib{crashpad_handler_common}
 import libs += libcrashpad%lib{crashpad_client}
 import libs += libcrashpad%lib{crashpad_compat}
 import libs += libcrashpad%lib{crashpad_util}

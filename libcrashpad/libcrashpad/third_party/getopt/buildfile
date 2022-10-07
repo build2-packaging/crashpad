@@ -16,3 +16,5 @@ lib{crashpad_getopt}:
   install         = include/crashpad/third_party/getopt
   install.subdirs = true
 }
+
+lib{crashpad_getopt}: cxx.pkgconfig.include = include/crashpad/

@@ -573,3 +573,7 @@ extern "C" {
   install         = include/crashpad/util/
   install.subdirs = true
 }
+
+lib{crashpad_util}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_net}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_no_cfi_icall}: cxx.pkgconfig.include = include/crashpad/

@@ -24,7 +24,7 @@ elif ($tgt == lib{crashpad_compat})
   }
   export $out_root/libcrashpad/compat/$import.target
 }
-elif ($tgt == lib{crashpad_handler_common} || $tgt == lib{crashpad_handler})
+elif ($tgt == lib{crashpad_handler})
 {
   $out_root/
   {
