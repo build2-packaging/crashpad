@@ -16,7 +16,7 @@ lib{crashpad_zlib}:
 # recreating subdirectories.
 {hxx ixx txx}{*}:
 {
-  install         = include/crashpad/third_party/zlib
+  install         = include/crashpad/third_party/zlib/
   install.subdirs = true
 }
 
