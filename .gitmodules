@@ -1,3 +1,6 @@
 [submodule "upstream"]
 	path = upstream
 	url = https://chromium.googlesource.com/crashpad/crashpad
+[submodule "libcrashpad/libcrashpad/third_party/lss/lss-upstream"]
+	path = libcrashpad/libcrashpad/third_party/lss/lss-upstream
+	url = https://chromium.googlesource.com/linux-syscall-support

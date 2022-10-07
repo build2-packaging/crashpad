@@ -13,7 +13,5 @@ Supported:
  - macos-static (clang)
 
 TODO:
- - Get `linux_syscall_support.h` via a git submodule.
-
  - Add support for (Android/ChromeOS/IOS/Fuchsia)
  - Investigate disabled tests
