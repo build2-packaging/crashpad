@@ -14,9 +14,6 @@ Supported:
 
 TODO:
  - Get `linux_syscall_support.h` via a git submodule.
- - `zlib_crashpad.h` is included by public headers and therefore must be
-   installed. Perhaps it's cleaner to just make it into a (header-only)
-   library like getopt (e.g., `lib{crashpad_zlib}`).
 
  - Add support for (Android/ChromeOS/IOS/Fuchsia)
  - Investigate disabled tests

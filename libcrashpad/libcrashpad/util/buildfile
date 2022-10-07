@@ -1,12 +1,13 @@
 import intf_libs += mini_chromium%lib{mini_chromium}
-import intf_libs += libz%lib{z}
 if ($cxx.target.class == 'linux')
     import intf_libs += libcurl%lib{curl}
 
 include ../compat/
 include ../build/
+include ../third_party/zlib/
 intf_libs += ../compat/lib{crashpad_compat}
 intf_libs += ../build/lib{crashpad_build}
+intf_libs += ../third_party/zlib/lib{crashpad_zlib}
 
 import no_cfi_icall_intf_libs += mini_chromium%lib{mini_chromium}
 
@@ -74,8 +75,7 @@ util_common_headers = file/delimited_file_reader \
                       thread/stoppable \
                       thread/thread \
                       thread/thread_log_messages \
-                      thread/worker_thread \
-                      ../third_party/zlib/zlib_crashpad
+                      thread/worker_thread
                  
 util_common_source =  file/delimited_file_reader \
                       file/file_helper \
@@ -335,7 +335,7 @@ lib{crashpad_no_cfi_icall}: {hxx}{misc/no_cfi_icall}
 lib{crashpad_no_cfi_icall}: $no_cfi_icall_intf_libs
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
+cxx.poptions =+ "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
 
 if ($cxx.id == 'gcc')
 {
@@ -345,7 +345,7 @@ if ($cxx.id == 'gcc')
 # util export options.
 lib{crashpad_util}:
 {
-  cxx.export.poptions = "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DCRASHPAD_LSS_SOURCE_EXTERNAL -DZLIB_CONST
+  cxx.export.poptions = "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
   cxx.export.libs = $intf_libs lib{crashpad_no_cfi_icall}
 }
 

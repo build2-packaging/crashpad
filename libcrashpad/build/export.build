@@ -48,6 +48,14 @@ elif ($tgt == lib{crashpad_snapshot} || $tgt == lib{crashpad_context})
   }
   export $out_root/libcrashpad/snapshot/$import.target
 }
+elif ($tgt == lib{crashpad_zlib})
+{
+  $out_root/
+  {
+    include libcrashpad/third_party/zlib/
+  }
+  export $out_root/libcrashpad/third_party/zlib/$import.target
+}
 elif ($tgt == lib{crashpad_tool_support})
 {
   $out_root/

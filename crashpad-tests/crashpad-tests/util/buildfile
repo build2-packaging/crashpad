@@ -1,7 +1,7 @@
 import libs += gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
-import libs += libz%lib{z}
+import libs += libcrashpad%lib{crashpad_zlib}
 import libs += libcrashpad%lib{crashpad_util}
 import libs += libcrashpad%lib{crashpad_net}
 import libs += libcrashpad%lib{crashpad_client}
@@ -9,8 +9,7 @@ import libs += libcrashpad%lib{crashpad_client}
 include ../test/
 libs += ../test/lib{test}
 
-common_headers =  ../third_party/zlib/zlib_crashpad \
-                  misc/capture_context_test_util \
+common_headers =  misc/capture_context_test_util \
                   net/http_body_test_util \
                   stream/test_output_stream
 
