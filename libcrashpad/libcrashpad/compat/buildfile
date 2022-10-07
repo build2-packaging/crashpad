@@ -51,7 +51,7 @@ include ../third_party/getopt/
 lib{crashpad_compat}: {hxx}{$linux_headers} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_compat}: {hxx}{$mac_headers} {cxx}{$mac_source}: include = ($cxx.target.class == 'macos')
 lib{crashpad_compat}: {hxx}{$win_headers} {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
-lib{crashpad_compat}: ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
+lib{crashpad_compat}: ../third_party/getopt/lib{crashpad_getopt}: include = ($cxx.target.class == 'windows')
 lib{crashpad_compat}: $impl_libs $intf_libs
 
 switch $cxx.target.class

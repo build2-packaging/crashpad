@@ -1,10 +1,10 @@
-lib{getopt}: {hxx cxx}{getopt}
+lib{crashpad_getopt}: {hxx cxx}{getopt}
 
 # Build options.
 cxx.poptions =+ "-I$src_root"
 
 # Export options.
-lib{getopt}:
+lib{crashpad_getopt}:
 {
   cxx.export.poptions = "-I$src_root"
 }

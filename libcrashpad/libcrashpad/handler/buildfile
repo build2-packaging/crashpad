@@ -67,7 +67,7 @@ lib{crashpad_handler_common}: $impl_libs $intf_libs
 lib{crashpad_handler}: {hxx}{$libhandler_common_headers} {cxx}{$libhandler_common_source}
 lib{crashpad_handler}: {hxx}{$libhandler_linux_header} {cxx}{$libhandler_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_handler}: {hxx}{$libhandler_macos_header} {cxx}{$libhandler_macos_source}: include = ($cxx.target.class == 'macos')
-lib{crashpad_handler}: {hxx}{$libhandler_win_header} {cxx}{$libhandler_win_source} ../third_party/getopt/lib{getopt}: include = ($cxx.target.class == 'windows')
+lib{crashpad_handler}: {hxx}{$libhandler_win_header} {cxx}{$libhandler_win_source} ../third_party/getopt/lib{crashpad_getopt}: include = ($cxx.target.class == 'windows')
 lib{crashpad_handler}: $impl_libs $intf_libs $handler_intf_libs $handler_impl_libs
 
 # Build options.
