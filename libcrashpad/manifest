@@ -1,7 +1,8 @@
 : 1
 name: libcrashpad
 version: 0.8.0
-summary: Chromium crash-reporting system
+project: crashpad
+summary: Chromium crash-reporting system, client libraries
 license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad

@@ -1,4 +1,4 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 lib{crashpad_build}: {hxx}{chromeos_buildflags}
 lib{crashpad_build}: $intf_libs
@@ -6,7 +6,7 @@ lib{crashpad_build}: $intf_libs
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
 
-# util export options.
+# Export options.
 lib{crashpad_build}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
@@ -20,3 +20,5 @@ lib{crashpad_build}:
   install         = include/crashpad/build/
   install.subdirs = true
 }
+
+lib{crashpad_build}: cxx.pkgconfig.include = include/crashpad/

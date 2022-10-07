@@ -2,7 +2,7 @@
 name: crashpad-handler
 version: 0.8.0
 project: crashpad
-summary: crashpad-handler C++ executable
+summary: Chromium crash-reporting system, handler executables
 license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad

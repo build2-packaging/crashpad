@@ -2,7 +2,7 @@
 name: crashpad-tests
 version: 0.8.0
 project: crashpad
-summary: Tests package for crashpad library
+summary: Chromium crash-reporting system, tests
 license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad
@@ -18,7 +18,12 @@ build-exclude: **/**-emscripten  ;
 
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
-depends: crashpad-handler == $
 depends: gtest ^1.11.0
 depends: gmock ^1.11.0
 depends: mini_chromium ^0.1.0
+
+# Note that while the crashpad-handler packages provides executables, they
+# are used during the application's run-time, not build-time. Thus it's not
+# a build-time dependency.
+#
+depends: crashpad-handler == $

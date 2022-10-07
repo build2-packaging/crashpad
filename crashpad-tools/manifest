@@ -2,7 +2,7 @@
 name: crashpad-tools
 version: 0.8.0
 project: crashpad
-summary: crashpad-tools C++ executables
+summary: Chromium crash-reporting system, additional tools
 license: Apache-2.0
 description-file: README.md
 url: https://chromium.googlesource.com/crashpad/crashpad

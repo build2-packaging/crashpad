@@ -1,4 +1,4 @@
-lib{getopt}: {hxx cxx}{getopt} $impl_libs $intf_libs
+lib{getopt}: {hxx cxx}{getopt}
 
 # Build options.
 cxx.poptions =+ "-I$src_root"
@@ -7,7 +7,6 @@ cxx.poptions =+ "-I$src_root"
 lib{getopt}:
 {
   cxx.export.poptions = "-I$src_root"
-  cxx.export.libs = $intf_libs
 }
 
 # Install into the crashpad/ subdirectory of, say, /usr/include/
