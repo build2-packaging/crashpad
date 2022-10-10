@@ -1,6 +1,5 @@
-tgt = $import.target
-
-if ($tgt == lib{crashpad_build})
+tgt_name = $name($import.target)
+if ($tgt_name == crashpad_build)
 {
   $out_root/
   {
@@ -8,7 +7,7 @@ if ($tgt == lib{crashpad_build})
   }
   export $out_root/libcrashpad/build/$import.target
 }
-elif ($tgt == lib{crashpad_client} || $tgt == lib{crashpad_client_common} || $tgt == lib{crashpad_pthread_create})
+elif ($tgt_name == crashpad_client || $tgt_name == crashpad_client_common || $tgt_name == crashpad_pthread_create)
 {
   $out_root/
   {
@@ -16,7 +15,7 @@ elif ($tgt == lib{crashpad_client} || $tgt == lib{crashpad_client_common} || $tg
   }
   export $out_root/libcrashpad/client/$import.target
 }
-elif ($tgt == lib{crashpad_compat})
+elif ($tgt_name == crashpad_compat)
 {
   $out_root/
   {
@@ -24,7 +23,7 @@ elif ($tgt == lib{crashpad_compat})
   }
   export $out_root/libcrashpad/compat/$import.target
 }
-elif ($tgt == lib{crashpad_handler})
+elif ($tgt_name == crashpad_handler)
 {
   $out_root/
   {
@@ -32,7 +31,7 @@ elif ($tgt == lib{crashpad_handler})
   }
   export $out_root/libcrashpad/handler/$import.target
 }
-elif ($tgt == lib{crashpad_minidump} || $tgt == lib{crashpad_format})
+elif ($tgt_name == crashpad_minidump || $tgt_name == crashpad_format)
 {
   $out_root/
   {
@@ -40,7 +39,7 @@ elif ($tgt == lib{crashpad_minidump} || $tgt == lib{crashpad_format})
   }
   export $out_root/libcrashpad/minidump/$import.target
 }
-elif ($tgt == lib{crashpad_snapshot} || $tgt == lib{crashpad_context})
+elif ($tgt_name == crashpad_snapshot || $tgt_name == crashpad_context)
 {
   $out_root/
   {
@@ -48,7 +47,7 @@ elif ($tgt == lib{crashpad_snapshot} || $tgt == lib{crashpad_context})
   }
   export $out_root/libcrashpad/snapshot/$import.target
 }
-elif ($tgt == lib{crashpad_zlib})
+elif ($tgt_name == crashpad_zlib)
 {
   $out_root/
   {
@@ -56,7 +55,7 @@ elif ($tgt == lib{crashpad_zlib})
   }
   export $out_root/libcrashpad/third_party/zlib/$import.target
 }
-elif ($tgt == lib{crashpad_tool_support})
+elif ($tgt_name == crashpad_tool_support)
 {
   $out_root/
   {
@@ -64,7 +63,7 @@ elif ($tgt == lib{crashpad_tool_support})
   }
   export $out_root/libcrashpad/tools/$import.target
 }
-elif ($tgt == lib{crashpad_util} || $tgt == lib{crashpad_net})
+elif ($tgt_name == crashpad_util || $tgt_name == crashpad_net)
 {
   $out_root/
   {

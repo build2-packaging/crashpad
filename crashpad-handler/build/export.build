@@ -1,0 +1,5 @@
+$out_root/
+{
+  include crashpad-handler/
+}
+export $out_root/crashpad-handler/$import.target

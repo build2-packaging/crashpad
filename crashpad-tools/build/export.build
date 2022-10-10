@@ -1,0 +1,5 @@
+$out_root/
+{
+  include crashpad-tools/
+}
+export $out_root/crashpad-tools/$import.target
