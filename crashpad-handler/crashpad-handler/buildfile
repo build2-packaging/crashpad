@@ -12,18 +12,18 @@ if ($cxx.target.class == 'linux')
   import libs += libcrashpad%lib{crashpad_pthread_create}
 }
 
-crash_handler_exe = ($cxx.target.class == 'windows' ? crash_handler.exe : crash_handler)
+crashpad_handler_exe = ($cxx.target.class == 'windows' ? crashpad_handler.exe : crashpad_handler)
 
-./: exe{$crash_handler_exe}
+./: exe{$crashpad_handler_exe}
 ./: exe{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
 
-exe{$crash_handler_exe}: {cxx}{main} $libs
+exe{$crashpad_handler_exe}: {cxx}{main} $libs
 exe{crashpad_handler.com}: {cxx}{main} $libs: include = ($cxx.target.class == 'windows')
 
 cxx.poptions =+ "-I$out_root" "-I$src_root"
 
 if($cxx.target.system == 'win32-msvc')
 {
-  exe{$crash_handler_exe}: cxx.loptions += '/subsystem:windows'
+  exe{$crashpad_handler_exe}: cxx.loptions += '/subsystem:windows'
   exe{crashpad_handler.com}: cxx.loptions += '/subsystem:console'
 }
