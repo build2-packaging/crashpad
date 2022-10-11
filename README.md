@@ -13,6 +13,5 @@ Supported:
  - macos-static (clang)
 
 TODO:
- - Add `LICENSE` file to -handler, -tools, and -tests.
  - Add support for (Android/ChromeOS/IOS/Fuchsia)
  - Investigate disabled tests
