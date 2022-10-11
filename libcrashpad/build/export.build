@@ -23,7 +23,7 @@ elif ($tgt_name == crashpad_compat)
   }
   export $out_root/libcrashpad/compat/$import.target
 }
-elif ($tgt_name == crashpad_handler)
+elif ($tgt_name == crashpad_handler || $tgt_name == crashpad_handler_common)
 {
   $out_root/
   {
