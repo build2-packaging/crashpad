@@ -138,7 +138,7 @@ exe{crashpad_util_test}: $libs
 exe{crashpad_util_test_process_info_test_child}: {cxx}{win/process_info_test_child}: include = ($cxx.target.class == 'windows')
 exe{crashpad_util_test_safe_terminate_process_test_child}: {cxx}{win/safe_terminate_process_test_child}: include = ($cxx.target.class == 'windows')
 
-cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
+cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST -DCRASHPAD_LSS_SOURCE_EXTERNAL
 
 switch $cxx.target.class
 {
