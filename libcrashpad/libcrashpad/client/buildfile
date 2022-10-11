@@ -117,7 +117,7 @@ objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
 }}
 
 # Build options.
-cxx.poptions =+ "-I$src_root"/libcrashpad
+cxx.poptions =+ "-I$src_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
 
 if ($cxx.class == 'gcc')
 {
