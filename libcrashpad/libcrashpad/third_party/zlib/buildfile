@@ -1,4 +1,4 @@
-import intf_libs += libz%lib{z}
+import intf_libs = libz%lib{z}
 
 lib{crashpad_zlib}: {hxx}{zlib_crashpad} $intf_libs
 
@@ -8,12 +8,12 @@ cxx.poptions =+ "-I$src_root" -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DZLIB_CONST
 # Export options.
 lib{crashpad_zlib}:
 {
-  cxx.export.poptions = "-I$src_root"  -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DZLIB_CONST
+  cxx.export.poptions = "-I$src_root" -DCRASHPAD_ZLIB_SOURCE_SYSTEM -DZLIB_CONST
   cxx.export.libs = $intf_libs
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
-# recreating subdirectories.
+# Install into the crashpad/third_party/zlib/ subdirectory of, say,
+# /usr/include/ recreating subdirectories.
 {hxx ixx txx}{*}:
 {
   install         = include/crashpad/third_party/zlib/

@@ -1,4 +1,4 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 include ../compat/
 include ../util/
@@ -7,11 +7,12 @@ include ../build/
 
 intf_libs += ../build/lib{crashpad_build}
 intf_libs += ../compat/lib{crashpad_compat}
-impl_libs += ../snapshot/lib{crashpad_context}
+
+impl_libs  = ../snapshot/lib{crashpad_context}
 impl_libs += ../util/lib{crashpad_util}
 
-minidump_intf_libs += lib{crashpad_format}
-minidump_impl_libs += ../snapshot/lib{crashpad_snapshot}
+minidump_intf_libs = lib{crashpad_format}
+minidump_impl_libs = ../snapshot/lib{crashpad_snapshot}
 
 format_common_headers   = minidump_context \
                           minidump_extensions
@@ -71,11 +72,11 @@ minidump_common_source  = minidump_annotation_writer \
                           minidump_writable \
                           minidump_writer_util
 
-./: lib{crashpad_minidump} lib{crashpad_format}
+./: lib{crashpad_minidump crashpad_format}
 
 lib{crashpad_format}: {hxx}{$format_common_headers} {cxx}{$format_common_source} $impl_libs $intf_libs
 
-lib{crashpad_minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $intf_libs $minidump_intf_libs $minidump_impl_libs
+lib{crashpad_minidump}: {hxx}{$minidump_common_headers} {cxx}{$minidump_common_source} $impl_libs $minidump_impl_libs $intf_libs $minidump_intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
@@ -96,7 +97,7 @@ lib{crashpad_minidump}:
   cxx.export.libs = $intf_libs $minidump_intf_libs
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Install into the crashpad/minidump/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
 {hxx ixx txx}{*}:
@@ -105,5 +106,5 @@ lib{crashpad_minidump}:
   install.subdirs = true
 }
 
-lib{crashpad_format}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_minidump}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_format \
+    crashpad_minidump}: cxx.pkgconfig.include = include/crashpad/

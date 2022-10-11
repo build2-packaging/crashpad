@@ -1,4 +1,4 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 include ../client/
 include ../compat/
@@ -7,16 +7,17 @@ include ../util/
 include ../build/
 
 intf_libs += ../build/lib{crashpad_build}
-impl_libs += ../util/lib{crashpad_util}
 
-snapshot_impl_libs += ../client/lib{crashpad_client_common}
+impl_libs  = ../util/lib{crashpad_util}
+
+snapshot_impl_libs  = ../client/lib{crashpad_client_common}
 snapshot_impl_libs += ../compat/lib{crashpad_compat}
 snapshot_impl_libs += ../minidump/lib{crashpad_format}
 snapshot_impl_libs += ../util/lib{crashpad_util}
 
 context_common_headers  = cpu_architecture \
                           cpu_context
-                 
+
 context_common_source   = cpu_context
 
 #TODO Figure out what mac_universal is?, x86/cpuid_reader should only be included for mac_universal...
@@ -187,7 +188,7 @@ snapshot_win_source    = win/capture_memory_delegate_win \
                          win/thread_snapshot_win \
                          crashpad_types/crashpad_info_reader
 
-./: lib{crashpad_snapshot} lib{crashpad_context}
+./: lib{crashpad_snapshot crashpad_context}
 
 lib{crashpad_context}: {hxx}{$context_common_headers} {cxx}{$context_common_source} $impl_libs $intf_libs
 
@@ -196,7 +197,7 @@ lib{crashpad_snapshot}: {hxx}{$snapshot_posix_headers} {cxx}{$snapshot_posix_sou
 lib{crashpad_snapshot}: {hxx}{$snapshot_macos_headers} {cxx}{$snapshot_macos_source} {proctype}{$snapshot_macos_files}: include = ($cxx.target.class == 'macos')
 lib{crashpad_snapshot}: {hxx}{$snapshot_linux_headers} {cxx}{$snapshot_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_snapshot}: {hxx}{$snapshot_win_headers} {cxx}{$snapshot_win_source}: include = ($cxx.target.class == 'windows')
-lib{crashpad_snapshot}: $impl_libs $intf_libs $snapshot_impl_libs $snapshot_intf_libs lib{crashpad_context}
+lib{crashpad_snapshot}: lib{crashpad_context} $impl_libs $snapshot_impl_libs $intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
@@ -226,10 +227,10 @@ lib{crashpad_context}:
 lib{crashpad_snapshot}:
 {
   cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs $snapshot_intf_libs lib{crashpad_context}
+  cxx.export.libs = lib{crashpad_context} $intf_libs $snapshot_intf_libs
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Install into the crashpad/snapshot/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
 {hxx ixx txx proctype}{*}:
@@ -238,5 +239,5 @@ lib{crashpad_snapshot}:
   install.subdirs = true
 }
 
-lib{crashpad_context}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_snapshot}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_context \
+    crashpad_snapshot}: cxx.pkgconfig.include = include/crashpad/

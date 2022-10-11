@@ -1,4 +1,4 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 include ../client/
 include ../snapshot/
@@ -6,21 +6,24 @@ include ../util/
 include ../minidump/
 include ../tools/
 include ../build/
+include ../third_party/getopt/
 
 intf_libs += ../build/lib{crashpad_build}
 intf_libs += ../util/lib{crashpad_util}
-impl_libs += ../util/lib{crashpad_net}
+
+impl_libs  = ../util/lib{crashpad_net}
 impl_libs += ../client/lib{crashpad_client_common}
 impl_libs += ../snapshot/lib{crashpad_snapshot}
 
-handler_intf_libs += ../client/lib{crashpad_client}
-handler_impl_libs += lib{crashpad_handler_common}
+handler_intf_libs  = ../client/lib{crashpad_client}
+
+handler_impl_libs  = lib{crashpad_handler_common}
 handler_impl_libs += ../minidump/lib{crashpad_minidump}
 handler_impl_libs += ../tools/lib{crashpad_tool_support}
 
 libcommon_common_headers =  crash_report_upload_thread \
                             minidump_to_upload_parameters
-   
+
 libcommon_common_source =   crash_report_upload_thread \
                             minidump_to_upload_parameters
 
@@ -56,8 +59,6 @@ libhandler_win_header =     win/crash_report_exception_handler
 
 libhandler_win_source =     win/crash_report_exception_handler
 
-include ../third_party/getopt/
-
 ./: lib{crashpad_handler} lib{crashpad_handler_common}
 
 lib{crashpad_handler_common}: {hxx}{$libcommon_common_headers} {cxx}{$libcommon_common_source}
@@ -68,7 +69,7 @@ lib{crashpad_handler}: {hxx}{$libhandler_common_headers} {cxx}{$libhandler_commo
 lib{crashpad_handler}: {hxx}{$libhandler_linux_header} {cxx}{$libhandler_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_handler}: {hxx}{$libhandler_macos_header} {cxx}{$libhandler_macos_source}: include = ($cxx.target.class == 'macos')
 lib{crashpad_handler}: {hxx}{$libhandler_win_header} {cxx}{$libhandler_win_source} ../third_party/getopt/lib{crashpad_getopt}: include = ($cxx.target.class == 'windows')
-lib{crashpad_handler}: $impl_libs $intf_libs $handler_intf_libs $handler_impl_libs
+lib{crashpad_handler}: $impl_libs $handler_impl_libs $intf_libs $handler_intf_libs
 
 # Build options.
 cxx.poptions =+ "-I$src_root"/libcrashpad
@@ -87,7 +88,7 @@ lib{crashpad_handler}:
   cxx.export.libs = $intf_libs $handler_intf_libs
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Install into the crashpad/handler/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 {hxx ixx txx}{*}:
 {
@@ -95,5 +96,5 @@ lib{crashpad_handler}:
   install.subdirs = true
 }
 
-lib{crashpad_handler}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_handler_common}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_handler \
+    crashpad_handler_common}: cxx.pkgconfig.include = include/crashpad/

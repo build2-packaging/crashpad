@@ -1,6 +1,13 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
+
 if ($cxx.target.class == 'linux')
-    import intf_libs += libcurl%lib{curl}
+  import intf_libs += libcurl%lib{curl}
+
+if ($cxx.target.class == 'macos')
+{
+  import! mig = xcode%exe{mig}
+  import! xcrun = xcode%exe{xcrun}
+}
 
 include ../compat/
 include ../build/
@@ -9,7 +16,7 @@ intf_libs += ../compat/lib{crashpad_compat}
 intf_libs += ../build/lib{crashpad_build}
 intf_libs += ../third_party/zlib/lib{crashpad_zlib}
 
-import no_cfi_icall_intf_libs += mini_chromium%lib{mini_chromium}
+import no_cfi_icall_intf_libs = mini_chromium%lib{mini_chromium}
 
 util_common_headers = file/delimited_file_reader \
                       file/directory_reader \
@@ -76,7 +83,7 @@ util_common_headers = file/delimited_file_reader \
                       thread/thread \
                       thread/thread_log_messages \
                       thread/worker_thread
-                 
+
 util_common_source =  file/delimited_file_reader \
                       file/file_helper \
                       file/file_io \
@@ -297,6 +304,14 @@ util_win_source =     file/directory_reader_win \
                       win/scoped_set_event \
                       win/session_end_watcher
 
+util_linux_assembly_source = misc/capture_context_linux.S misc/arm64_pac_bti.S
+
+util_macos_assembly_source = misc/capture_context_mac.S
+
+util_win_assembly_source = misc/capture_context_win.asm win/safe_terminate_process.asm
+
+util_macos_defs_files = mach/child_port.defs mach/notify.defs mach/exc.defs mach/mach_exc.defs
+
 net_common_headers =  net/http_body \
                       net/http_body_gzip \
                       net/http_headers \
@@ -317,114 +332,52 @@ net_linux_source =    net/http_transport_libcurl
 
 net_win_source =      net/http_transport_win
 
-./: lib{crashpad_util} lib{crashpad_net} lib{crashpad_no_cfi_icall}
+./: lib{crashpad_util crashpad_net crashpad_no_cfi_icall}
 
 lib{crashpad_util}: {hxx}{$util_common_headers} {cxx}{$util_common_source}
 lib{crashpad_util}: {hxx}{$util_posix_headers} {cxx}{$util_posix_source}: include = ($cxx.target.class != 'windows')
 lib{crashpad_util}: {hxx}{$util_linux_headers} {cxx}{$util_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_util}: {hxx}{$util_mac_headers} {cxx}{$util_mac_source}: include = ($cxx.target.class == 'macos')
 lib{crashpad_util}: {hxx}{$util_win_headers} {cxx}{$util_win_source}: include = ($cxx.target.class == 'windows')
-lib{crashpad_util}: $impl_libs $intf_libs lib{crashpad_no_cfi_icall}
+lib{crashpad_util}: lib{crashpad_no_cfi_icall} $impl_libs $intf_libs
 
 lib{crashpad_net}: {hxx}{$net_common_headers} {cxx}{$net_common_source}
 lib{crashpad_net}: {cxx}{$net_win_source}: include = ($cxx.target.class == 'windows')
 lib{crashpad_net}: {cxx}{$net_linux_source}: include = ($cxx.target.class == 'linux')
-lib{crashpad_net}: $impl_libs $intf_libs lib{crashpad_util}
+lib{crashpad_net}: lib{crashpad_util} $impl_libs $intf_libs
 
 lib{crashpad_no_cfi_icall}: {hxx}{misc/no_cfi_icall}
 lib{crashpad_no_cfi_icall}: $no_cfi_icall_intf_libs
 
-# Build options.
-cxx.poptions =+ "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
-
-if ($cxx.id == 'gcc')
+for f: $util_linux_assembly_source
 {
-    cxx.coptions += -fpermissive -Wno-multichar
+  misc/obja{$name($f)...a.o} misc/objs{$name($f)...so.o}: $f
+  {{
+    diag as $>
+    $cxx.path "-I$src_root"/libcrashpad -o $path($>) -c $path($<[0])
+  }}
+  lib{crashpad_util}: file{$f} misc/obj{$name($f)}: include = ($cxx.target.class == 'linux')
 }
 
-# util export options.
-lib{crashpad_util}:
+for f: $util_macos_assembly_source
 {
-  cxx.export.poptions = "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
-  cxx.export.libs = $intf_libs lib{crashpad_no_cfi_icall}
+  misc/obja{$name($f)...a.o} misc/objs{$name($f)...so.o}: $f
+  {{
+    diag as $>
+    $cxx.path "-I$src_root"/libcrashpad -o $path($>) -c $path($<[0])
+  }}
+  lib{crashpad_util}: file{$f} misc/obj{$name($f)}: include = ($cxx.target.class == 'macos')
 }
 
-# net export options.
-lib{crashpad_net}:
+for f: $util_win_assembly_source
 {
-  cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs
-}
-
-# no_cfi_icall export options.
-lib{crashpad_no_cfi_icall}:
-{
-  cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $no_cfi_icall_intf_libs
-}
-
-switch $cxx.target.class
-{
-  case 'linux'
-  {
-    cxx.libs += -ldl
-  }
-  case 'macos'
-  {
-    cxx.libs += -framework CoreFoundation      \
-                -framework Foundation          \
-                -framework IOKit               \
-                -framework CoreServices        \
-                -lbsm
-  }
-  case 'windows'
-  {
-    #TODO Check if user32.lib are not automatically and are required to be specifed here.
-    if ($cxx.target.system != 'mingw32')
-    {
-      cxx.libs += version.lib Advapi32.lib winhttp.lib
-    }
-  }
-}
-
-enable_assembly = (($cxx.target.class == 'macos') || ($cxx.target.class == 'linux'))
-if ($enable_assembly)
-{
-    lib{crashpad_util}: cxx.coptions += "-mbmi"
-}
-
-switch $cxx.target.class
-{
-  case 'linux'
-    assembly_source = misc/capture_context_linux.S misc/arm64_pac_bti.S
-  case 'macos'
-    assembly_source = misc/capture_context_mac.S
-  case 'windows'
-    assembly_source_win = misc/capture_context_win.asm win/safe_terminate_process.asm
-}
-
-for f: $assembly_source
-{
-    misc/obja{$name($f)...a.o} misc/objs{$name($f)...so.o}: $f
-    {{
-        diag as $>
-        $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/libcrashpad
-    }}
-
-    lib{crashpad_util}: file{$f} misc/obj{$name($f)}
-}
-
-for f: $assembly_source_win
-{
-    ml = $directory($effect($cxx.path))/ml64.exe
-
-    obja{$name($f)...a.obj} objs{$name($f)...s.obj}: $f $ml
-    {{
-        diag masm64 $>
-        $ml /Fo $path($>) /c $path($<[0])
-    }}
-
-    lib{crashpad_util}: file{$f} obj{$name($f)}
+  obja{$name($f)...a.obj} objs{$name($f)...s.obj}: $f
+  {{
+      diag masm64 $>
+      ml = $directory($effect($cxx.path))/ml64.exe
+      $ml /Fo $path($>) /c $path($<[0])
+  }}
+  lib{crashpad_util}: file{$f} obj{$name($f)}: include = ($cxx.target.class == 'windows')
 }
 
 for n: $util_macos_mm $net_macos_mm
@@ -473,29 +426,18 @@ objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
             -o $path($>) -c -x objective-c++ $path($<[0])
 }}
 
-switch $cxx.target.class
+for def: $util_macos_defs_files
 {
-  case 'macos'
-    defs_files = mach/child_port.defs mach/notify.defs mach/exc.defs mach/mach_exc.defs
-}
-
-mig = /usr/bin/mig
-xcrun = /usr/bin/xcrun
-for def: $defs_files
-{
-  <{hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}>: $mig $xcrun $def
+  <{hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}>: $def $mig $xcrun
   {{
-    diag mig ($<[2])
-    echo $path($<[2])
+    diag mig ($<[0])
     mach_root = "$out_base"/mach
     $xcrun --show-sdk-path | set sdk_path
-    defs_path = ($name($<[2]) == child_port ? "$src_root"/libcrashpad/util/mach : "$sdk_path"/usr/include/mach/)
+    defs_path = ($name($<[0]) == child_port ? "$src_root"/libcrashpad/util/mach : "$sdk_path"/usr/include/mach/)
     user_header_path = "$mach_root"/"$leaf($path($>[0]))"
     user_source_path = "$mach_root"/"$leaf($path($>[1]))"
     server_header_path = "$mach_root"/"$leaf($path($>[2]))"
     server_source_path = "$mach_root"/"$leaf($path($>[3]))"
-
-    echo $path($<[2]) $user_header_path
 
     $mig -isysroot $sdk_path \
          "-I$src_root"/libcrashpad/ \
@@ -504,11 +446,11 @@ for def: $defs_files
          -user $user_source_path \
          -sheader $server_header_path \
          -server $server_source_path \
-         "$defs_path"/"$leaf($path($<[2]))"
+         "$defs_path"/"$leaf($path($<[0]))"
 
     #https://github.com/chromium/crashpad/blob/cca548be8467ce9d6e854467b366ad3a00c487ee/util/mach/mig_fix.py#L45-L49
     stub_replace = 's/^( \* (?:stub generated|with a MiG generated by) ).+$/\1<suppressed by mig_fix.py>/g'
-    
+
     #https://github.com/chromium/crashpad/blob/cca548be8467ce9d6e854467b366ad3a00c487ee/util/mach/mig_fix.py#L72-L73
     reply_replace = 's/^(\t} __Reply);$/\1 __attribute__((unused));/g'
 
@@ -529,7 +471,7 @@ extern
     # Fix user implementation
     sed -i -e $stub_replace $user_source_path
     #sed -i -e $reply_replace $user_source_path
-    
+
     # Fix server implementation
     sed -i -e $stub_replace $server_source_path
     sed -i -e $mig_internal_replace $server_source_path
@@ -562,10 +504,67 @@ extern "C" {
 #endif' >> $server_header_path
   }}
 
-  lib{crashpad_util}: {hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}
+  lib{crashpad_util}: file{$def} {hxx}{mach/$name($def)} {cxx}{mach/"$name($def)"User} {hxx cxx}{mach/"$name($def)"Server}: include = ($cxx.target.class == 'macos')
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Build options.
+cxx.poptions =+ "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad -DCRASHPAD_LSS_SOURCE_EXTERNAL
+
+if ($cxx.class == 'gcc')
+{
+  cxx.coptions += -fpermissive -Wno-multichar
+}
+
+# util export options.
+#
+# Note that lss.h is not included by any public headers so we don't need
+# to export -DCRASHPAD_LSS_SOURCE_EXTERNAL.
+#
+lib{crashpad_util}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad "-I$out_root"/libcrashpad
+  cxx.export.libs = $intf_libs lib{crashpad_no_cfi_icall}
+}
+
+# net export options.
+lib{crashpad_net}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad
+  cxx.export.libs = $intf_libs
+}
+
+# no_cfi_icall export options.
+lib{crashpad_no_cfi_icall}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad
+  cxx.export.libs = $no_cfi_icall_intf_libs
+}
+
+switch $cxx.target.class
+{
+  case 'linux'
+  {
+    cxx.libs += -ldl
+  }
+  case 'macos'
+  {
+    cxx.libs += -framework CoreFoundation      \
+                -framework Foundation          \
+                -framework IOKit               \
+                -framework CoreServices        \
+                -lbsm
+  }
+  case 'windows'
+  {
+    #TODO Check if user32.lib are not automatically and are required to be specifed here.
+    if ($cxx.target.system != 'mingw32')
+    {
+      cxx.libs += version.lib Advapi32.lib winhttp.lib
+    }
+  }
+}
+
+# Install into the crashpad/util/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
 {hxx ixx txx}{*}:
@@ -574,6 +573,6 @@ extern "C" {
   install.subdirs = true
 }
 
-lib{crashpad_util}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_net}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_no_cfi_icall}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_util \
+    crashpad_net \
+    crashpad_no_cfi_icall}: cxx.pkgconfig.include = include/crashpad/

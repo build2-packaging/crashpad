@@ -1,9 +1,10 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 include ../build/
 include ../util/
+include ../third_party/getopt/
 intf_libs += ../build/lib{crashpad_build}
-impl_libs += ../util/lib{crashpad_no_cfi_icall}
+impl_libs  = ../util/lib{crashpad_no_cfi_icall}
 
 linux_headers =  linux/signal \
                  linux/sys/mman \
@@ -46,8 +47,6 @@ win_headers =    win/getopt \
 win_source =     win/strings \
                  win/time
 
-include ../third_party/getopt/
-
 lib{crashpad_compat}: {hxx}{$linux_headers} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_compat}: {hxx}{$mac_headers} {cxx}{$mac_source}: include = ($cxx.target.class == 'macos')
 lib{crashpad_compat}: {hxx}{$win_headers} {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
@@ -83,6 +82,14 @@ lib{crashpad_compat}:
   cxx.export.libs = $intf_libs
 }
 
+# Install into the crashpad/compat/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+{hxx ixx txx}{*}:
+{
+  install         = include/crashpad/compat/
+  install.subdirs = true
+}
+
 switch $cxx.target.class
 {
   case 'linux'
@@ -91,12 +98,4 @@ switch $cxx.target.class
     lib{crashpad_compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/non_win include/crashpad/compat/mac
   case 'windows'
     lib{crashpad_compat}: cxx.pkgconfig.include = include/crashpad include/crashpad/compat/win
-}
-
-# Install into the crashpad/ subdirectory of, say, /usr/include/
-# recreating subdirectories.
-{hxx ixx txx}{*}:
-{
-  install         = include/crashpad/compat/
-  install.subdirs = true
 }

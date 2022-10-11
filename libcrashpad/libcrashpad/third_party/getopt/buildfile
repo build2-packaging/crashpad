@@ -9,11 +9,11 @@ lib{crashpad_getopt}:
   cxx.export.poptions = "-I$src_root"
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
-# recreating subdirectories.
+# Install into the crashpad/third_party/getopt/ subdirectory of, say,
+# /usr/include/ recreating subdirectories.
 {hxx ixx txx}{*}:
 {
-  install         = include/crashpad/third_party/getopt
+  install         = include/crashpad/third_party/getopt/
   install.subdirs = true
 }
 

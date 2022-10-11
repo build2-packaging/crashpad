@@ -13,7 +13,7 @@ lib{crashpad_build}:
   cxx.export.libs = $intf_libs
 }
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Install into the crashpad/build/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 {hxx ixx txx}{*}:
 {

@@ -1,4 +1,4 @@
-import intf_libs += mini_chromium%lib{mini_chromium}
+import intf_libs = mini_chromium%lib{mini_chromium}
 
 include ../util/
 include ../build/
@@ -20,6 +20,8 @@ libcommon_common_source = annotation \
                           settings
 
 libcommon_linux_source  = crash_report_database_generic
+libcommon_linux_assembly_source = crashpad_info_note.S
+
 libcommon_win_source    = crash_report_database_win
 libcommon_mac_mm        = crash_report_database_mac
 
@@ -51,78 +53,24 @@ client_win_source       = crashpad_client_win
 lib{crashpad_client_common}: {hxx}{$libcommon_common_header} {cxx}{$libcommon_common_source}
 lib{crashpad_client_common}: {cxx}{$libcommon_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_client_common}: {cxx}{$libcommon_win_source}: include = ($cxx.target.class == 'windows')
-lib{crashpad_client_common}: $impl_libs $intf_libs
+lib{crashpad_client_common}: $intf_libs
 
 lib{crashpad_client}: {hxx}{$client_common_header} {cxx}{$client_common_source}
 lib{crashpad_client}: {hxx}{$client_linux_header} {cxx}{$client_linux_source}: include = ($cxx.target.class == 'linux')
 lib{crashpad_client}: {hxx}{$client_mac_header} {cxx}{$client_mac_source}: include = ($cxx.target.class == 'macos')
 lib{crashpad_client}: {hxx}{$client_win_header} {cxx}{$client_win_source}: include = ($cxx.target.class == 'windows')
-lib{crashpad_client}: $impl_libs $intf_libs lib{crashpad_client_common}
+lib{crashpad_client}: lib{crashpad_client_common} $intf_libs
 
 lib{crashpad_pthread_create}: {cxx}{pthread_create_linux} lib{crashpad_client}: include = ($cxx.target.class == 'linux')
 
-# Build options.
-cxx.poptions =+ "-I$src_root"/libcrashpad
-
-if ($cxx.id == 'gcc')
+for f: $libcommon_linux_assembly_source
 {
-    cxx.coptions += -Wno-multichar
-}
-
-# libcommon export options.
-lib{crashpad_client_common}:
-{
-  cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs
-}
-
-# client export options.
-lib{crashpad_client}:
-{
-  cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs lib{crashpad_client_common}
-}
-
-# pthread_create export options.
-lib{crashpad_pthread_create}:
-{
-  cxx.export.poptions = "-I$src_root"/libcrashpad
-  cxx.export.libs = $intf_libs
-}
-
-switch $cxx.target.class
-{
-  case 'macos'
-  {
-    cxx.libs += -framework CoreServices \
-                -framework Foundation
-  }
-  case 'windows'
-  {
-    cxx.libs = rpcrt4.lib
-  }
-}
-
-enable_assembly = ($cxx.target.class == 'linux')
-if ($enable_assembly)
-{
-    lib{crashpad_client_common}: c.coptions += "-mbmi"
-}
-
-switch $cxx.target.class
-{
-  case 'linux'
-    assembly_source = crashpad_info_note.S
-}
-
-for f: $assembly_source
-{
-    obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
-    {{
-        diag as $>
-        $cxx.path -o $path($>) -c $path($<[0])  "-I$src_root"/libcrashpad
-    }}
-    lib{crashpad_client_common}: file{$f} obj{$name($f)}: include = $enable_assembly
+  obja{$name($f)...a.o} objs{$name($f)...so.o}: $f
+  {{
+    diag as $>
+    $cxx.path $cxx.poptions -o $path($>) -c $path($<[0])
+  }}
+  lib{crashpad_client_common}: file{$f} obj{$name($f)}: include = ($cxx.target.class == 'linux')
 }
 
 for n: $libcommon_mac_mm
@@ -168,7 +116,49 @@ objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
             -o $path($>) -c -x objective-c++ $path($<[0])
 }}
 
-# Install into the crashpad/ subdirectory of, say, /usr/include/
+# Build options.
+cxx.poptions =+ "-I$src_root"/libcrashpad
+
+if ($cxx.class == 'gcc')
+{
+  cxx.coptions += -Wno-multichar
+}
+
+# libcommon export options.
+lib{crashpad_client_common}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad
+  cxx.export.libs = $intf_libs
+}
+
+# client export options.
+lib{crashpad_client}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad
+  cxx.export.libs = lib{crashpad_client_common} $intf_libs
+}
+
+# pthread_create export options.
+lib{crashpad_pthread_create}:
+{
+  cxx.export.poptions = "-I$src_root"/libcrashpad
+  cxx.export.libs = $intf_libs
+}
+
+switch $cxx.target.class
+{
+  case 'macos'
+  {
+    cxx.libs += -framework CoreServices \
+                -framework Foundation
+  }
+  case 'windows'
+  {
+    cxx.libs = rpcrt4.lib
+  }
+}
+
+# Install into the crashpad/client/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
 {hxx ixx txx}{*}:
@@ -177,6 +167,6 @@ objs{~'/(.*).so/'}: mm{~'/\1/'} libus{meta}
   install.subdirs = true
 }
 
-lib{crashpad_client_common}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_client}: cxx.pkgconfig.include = include/crashpad/
-lib{crashpad_pthread_create}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_client_common \
+    crashpad_client        \
+    crashpad_pthread_create}: cxx.pkgconfig.include = include/crashpad/
