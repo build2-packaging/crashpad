@@ -96,3 +96,4 @@ lib{crashpad_handler}:
 }
 
 lib{crashpad_handler}: cxx.pkgconfig.include = include/crashpad/
+lib{crashpad_handler_common}: cxx.pkgconfig.include = include/crashpad/
