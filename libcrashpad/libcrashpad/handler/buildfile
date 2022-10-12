@@ -90,7 +90,7 @@ lib{crashpad_handler}:
 
 # Install into the crashpad/handler/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/handler/
   install.subdirs = true

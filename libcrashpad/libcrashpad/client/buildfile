@@ -161,7 +161,7 @@ switch $cxx.target.class
 # Install into the crashpad/client/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/client/
   install.subdirs = true

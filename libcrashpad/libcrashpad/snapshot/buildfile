@@ -233,7 +233,7 @@ lib{crashpad_snapshot}:
 # Install into the crashpad/snapshot/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
-{hxx ixx txx proctype}{*}:
+{hxx proctype}{*}:
 {
   install         = include/crashpad/snapshot/
   install.subdirs = true

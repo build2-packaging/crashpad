@@ -84,7 +84,7 @@ lib{crashpad_compat}:
 
 # Install into the crashpad/compat/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/compat/
   install.subdirs = true

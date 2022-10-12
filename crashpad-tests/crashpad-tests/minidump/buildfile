@@ -1,4 +1,4 @@
-import impl_libs += gtest%lib{gtest}
+import impl_libs  = gtest%lib{gtest}
 import impl_libs += gmock%lib{gmock}
 import impl_libs += mini_chromium%lib{mini_chromium}
 import impl_libs += libcrashpad%lib{crashpad_util}
@@ -10,7 +10,7 @@ include ../snapshot/
 impl_libs += ../snapshot/lib{snapshot_test_support} 
 impl_libs += ../test/lib{test}
 
-import test_support_intf_libs += libcrashpad%lib{crashpad_minidump}
+import test_support_intf_libs = libcrashpad%lib{crashpad_minidump}
 
 common_source =                       minidump_annotation_writer_test \
                                       minidump_byte_array_writer_test \
@@ -52,8 +52,6 @@ minidump_test_support_common_source = test/minidump_byte_array_writer_test_util 
                                       test/minidump_string_writer_test_util \
                                       test/minidump_user_extension_stream_util \
                                       test/minidump_writable_test_util
-
-./: lib{minidump_test_support} exe{crashpad_minidump_test}
 
 exe{crashpad_minidump_test}: {cxx}{$common_source}
 exe{crashpad_minidump_test}: {cxx}{../test/gtest_main}

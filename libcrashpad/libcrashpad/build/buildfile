@@ -15,7 +15,7 @@ lib{crashpad_build}:
 
 # Install into the crashpad/build/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/build/
   install.subdirs = true

@@ -14,7 +14,7 @@ lib{crashpad_zlib}:
 
 # Install into the crashpad/third_party/zlib/ subdirectory of, say,
 # /usr/include/ recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/third_party/zlib/
   install.subdirs = true

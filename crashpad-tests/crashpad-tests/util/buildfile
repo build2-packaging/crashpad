@@ -1,4 +1,4 @@
-import libs += gtest%lib{gtest}
+import libs  = gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_zlib}
@@ -119,8 +119,6 @@ win_source =    misc/capture_context_test_util_win \
                 win/scoped_process_suspend_test \
                 win/session_end_watcher_test
 
-./: exe{crashpad_util_test}
-
 exe{crashpad_util_test}: {hxx}{$common_headers} {cxx}{$common_source}
 exe{crashpad_util_test}: {cxx}{$posix_source}: include = ($cxx.target.class != 'windows')
 exe{crashpad_util_test}: {hxx}{$linux_header} {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
@@ -128,12 +126,38 @@ exe{crashpad_util_test}: {cxx}{$macos_source}: include = ($cxx.target.class == '
 exe{crashpad_util_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
 exe{crashpad_util_test}: {cxx}{../test/gtest_main}
 
-if ($cxx.target.class == 'windows')
+for n: $macos_mm
 {
-  exe{crashpad_util_test}: exe{crashpad_util_test_process_info_test_child}: test.input = true
-  exe{crashpad_util_test}: exe{crashpad_util_test_safe_terminate_process_test_child}: test.input = true
+  obje{$(n).o}: mm{$n}
 }
+
+exe{crashpad_util_test}: obje{$macos_mm}: include = ($cxx.target.class == 'macos')
+
+libue{meta}: $libs
+
+obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
+{{
+  lib_poptions = $cxx.lib_poptions(libue{meta}, obje)
+  depdb hash $lib_poptions
+
+  depdb dyndep "-I$out_base/crashpad" "-I$src_base/crashpad"           \
+              --what=header --default-type=h                           \
+              --update-exclude libue{meta}                             \
+              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
+              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
+  diag obj-c++ ($<[0])
+  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
+            $cc.coptions $cxx.coptions $cxx.mode                        \
+            -o $path($>) -c -x objective-c++ $path($<[0])
+}}
+
 exe{crashpad_util_test}: $libs
+
+exe{crashpad_util_test}: exe{crashpad_util_test_process_info_test_child crashpad_util_test_safe_terminate_process_test_child}:
+{
+  include = ($cxx.target.class == 'windows')
+  test.input = true
+}
 
 exe{crashpad_util_test_process_info_test_child}: {cxx}{win/process_info_test_child}: include = ($cxx.target.class == 'windows')
 exe{crashpad_util_test_safe_terminate_process_test_child}: {cxx}{win/safe_terminate_process_test_child}: include = ($cxx.target.class == 'windows')
@@ -159,30 +183,7 @@ switch $cxx.target.class
   }
 }
 
-for n: $macos_mm
-{
-  obje{$(n).o}: mm{$n}
-}
 
-exe{crashpad_util_test}: obje{$macos_mm}:  include = ($cxx.target.class == 'macos')
-
-libue{meta}: $libs
-
-obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
-{{
-  lib_poptions = $cxx.lib_poptions(libue{meta}, obje)
-  depdb hash $lib_poptions
-
-  depdb dyndep "-I$out_base/crashpad" "-I$src_base/crashpad"           \
-              --what=header --default-type=h                           \
-              --update-exclude libue{meta}                             \
-              -- $cxx.path $cc.poptions $cxx.poptions $lib_poptions    \
-              $cc.coptions $cxx.coptions $cxx.mode -M -MG $path($<[0])
-  diag obj-c++ ($<[0])
-  $cxx.path $cc.poptions $cxx.poptions $lib_poptions                    \
-            $cc.coptions $cxx.coptions $cxx.mode                        \
-            -o $path($>) -c -x objective-c++ $path($<[0])
-}}
 
 # TODO Support HTTPTransport tests, it requires cpphttplib
 # TODO Investigate why AlignedAllocatorDeathTest.BadAlignment fails.

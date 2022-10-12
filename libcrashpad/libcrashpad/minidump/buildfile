@@ -100,7 +100,7 @@ lib{crashpad_minidump}:
 # Install into the crashpad/minidump/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/minidump/
   install.subdirs = true

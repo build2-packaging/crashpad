@@ -17,7 +17,7 @@ lib{crashpad_tool_support}:
 
 # Install into the crashpad/tools/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/tools/
   install.subdirs = true

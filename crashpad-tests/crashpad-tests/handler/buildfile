@@ -1,4 +1,4 @@
-import libs += gtest%lib{gtest}
+import libs  = gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_handler}
@@ -22,8 +22,6 @@ linux_source =   linux/exception_handler_server_test
 
 win_source =     crashpad_handler_test
 
-./: exe{crashpad_handler_test}
-
 exe{crashpad_handler_test}: {cxx}{$common_source}
 exe{crashpad_handler_test}: {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')
 exe{crashpad_handler_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
@@ -37,8 +35,7 @@ exe{crashpad_handler_test}: exe{crashpad_handler_test_extended_handler}:
 }
 exe{crashpad_handler_test}: test = true
 
-exe{crashpad_handler_test_extended_handler}: {cxx}{crashpad_handler_test_extended_handler}
-exe{crashpad_handler_test_extended_handler}: $libs
+exe{crashpad_handler_test_extended_handler}: {cxx}{crashpad_handler_test_extended_handler} $libs
 
 cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
 
@@ -53,6 +50,6 @@ switch $cxx.target.class
 # TODO figure out why this test fails on the CI server. (probably incorrect path of crashpad_handler_test_extended_handler)
 if ($cxx.target.class == 'windows')
 {
-exe{crashpad_handler_test}: test.options = "--gtest_filter=-\
+  exe{crashpad_handler_test}: test.options = "--gtest_filter=-\
 CrashpadHandler.ExtensibilityCalloutsWork"
 }

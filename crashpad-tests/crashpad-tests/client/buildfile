@@ -1,4 +1,4 @@
-import libs += gtest%lib{gtest}
+import libs  = gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_client}
@@ -23,8 +23,6 @@ linux_source =   crashpad_client_linux_test
 macos_source =   simulate_crash_mac_test
 
 win_source =     crashpad_client_win_test
-
-./: exe{crashpad_client_test}
 
 exe{crashpad_client_test}: {cxx}{$common_source}
 exe{crashpad_client_test}: {cxx}{$linux_source}: include = ($cxx.target.class == 'linux')

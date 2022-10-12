@@ -1,20 +1,20 @@
-import libs += mini_chromium%lib{mini_chromium}
+import libs  = mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_build}
 import libs += libcrashpad%lib{crashpad_tool_support}
 import libs += libcrashpad%lib{crashpad_util}
 import libs += libcrashpad%lib{crashpad_compat}
 
-import database_util_libs += libcrashpad%lib{crashpad_client}
+import database_util_libs = libcrashpad%lib{crashpad_client}
 
-import http_upload_libs += libcrashpad%lib{crashpad_net}
+import http_upload_libs = libcrashpad%lib{crashpad_net}
 
-import generate_dump_libs += libcrashpad%lib{crashpad_minidump}
+import generate_dump_libs  = libcrashpad%lib{crashpad_minidump}
 import generate_dump_libs += libcrashpad%lib{crashpad_snapshot}
 
-import run_with_crashpad_libs += libcrashpad%lib{crashpad_client}
+import run_with_crashpad_libs = libcrashpad%lib{crashpad_client}
 
-./: exe{crashpad_database_util} exe{crashpad_http_upload} exe{base94_encoder} exe{generate_dump}
-./: exe{run_with_crashpad} exe{catch_exception_tool} exe{exception_port_tool} exe{on_demand_service_tool}: include = ($cxx.target.class == 'macos')
+./: exe{crashpad_database_util crashpad_http_upload base94_encoder generate_dump}
+./: exe{run_with_crashpad catch_exception_tool exception_port_tool on_demand_service_tool}: include = ($cxx.target.class == 'macos')
 
 exe{crashpad_database_util}: {cxx}{crashpad_database_util} $libs $database_util_libs
 exe{crashpad_http_upload}: {cxx}{crashpad_http_upload} $libs $http_upload_libs
@@ -22,21 +22,11 @@ exe{base94_encoder}: {cxx}{base94_encoder} $libs
 exe{generate_dump}: {cxx}{generate_dump} $libs $generate_dump_libs
 
 # TODO: macos plist see https://github.com/chromium/crashpad/blob/cca548be8467ce9d6e854467b366ad3a00c487ee/tools/BUILD.gn#L84-L90
-exe{run_with_crashpad}: {cxx}{run_with_crashpad} $libs $run_with_crashpad_libs: include = ($cxx.target.class == 'macos')
-exe{catch_exception_tool}: {cxx}{mac/catch_exception_tool} $libs: include = ($cxx.target.class == 'macos')
-exe{exception_port_tool}: {cxx}{mac/exception_port_tool} $libs: include = ($cxx.target.class == 'macos')
-exe{on_demand_service_tool}: $libs: include = ($cxx.target.class == 'macos')
-
-cxx.poptions =+ "-I$src_root"/crashpad-tools
-
-if ($cxx.target.class == 'macos')
-{
-  cxx.libs += -framework CoreFoundation \
-              -framework Foundation
-}
-
-obje{mac/on_demand_service_tool.o}: mm{mac/on_demand_service_tool}
-exe{on_demand_service_tool}: obje{mac/on_demand_service_tool}:  include = ($cxx.target.class == 'macos')
+exe{run_with_crashpad}: {cxx}{run_with_crashpad} $libs $run_with_crashpad_libs
+exe{catch_exception_tool}: {cxx}{mac/catch_exception_tool} $libs
+exe{exception_port_tool}: {cxx}{mac/exception_port_tool} $libs
+exe{on_demand_service_tool}: obje{mac/on_demand_service_tool.o}: mm{mac/on_demand_service_tool}
+exe{on_demand_service_tool}: $libs
 
 libue{meta}: $libs
 
@@ -55,3 +45,11 @@ obje{~'/(.*)/'}: mm{~'/\1/'} libue{meta}
             $cc.coptions $cxx.coptions $cxx.mode                        \
             -o $path($>) -c -x objective-c++ $path($<[0])
 }}
+
+cxx.poptions =+ "-I$src_root"/crashpad-tools
+
+if ($cxx.target.class == 'macos')
+{
+  cxx.libs += -framework CoreFoundation \
+              -framework Foundation
+}

@@ -11,7 +11,7 @@ lib{crashpad_getopt}:
 
 # Install into the crashpad/third_party/getopt/ subdirectory of, say,
 # /usr/include/ recreating subdirectories.
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/third_party/getopt/
   install.subdirs = true

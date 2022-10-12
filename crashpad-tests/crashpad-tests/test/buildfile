@@ -1,5 +1,4 @@
-libs =
-import libs += gtest%lib{gtest}
+import libs  = gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 
@@ -91,7 +90,7 @@ switch $cxx.target.class
   }
 }
 
-cxx.poptions =+ "-I$out_root" "-I$src_root"/crashpad-tests
+cxx.poptions =+ "-I$src_root"/crashpad-tests
 
 lib{test}:
 {

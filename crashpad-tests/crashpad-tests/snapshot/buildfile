@@ -1,4 +1,4 @@
-import libs += gtest%lib{gtest}
+import libs  = gtest%lib{gtest}
 import libs += gmock%lib{gmock}
 import libs += mini_chromium%lib{mini_chromium}
 import libs += libcrashpad%lib{crashpad_client}
@@ -11,10 +11,10 @@ include ../test/
 
 libs += ../test/lib{test}
 
-import impl_libs += mini_chromium%lib{mini_chromium}
+import impl_libs  = mini_chromium%lib{mini_chromium}
 import impl_libs += libcrashpad%lib{crashpad_compat}
 import impl_libs += libcrashpad%lib{crashpad_util}
-import intf_libs += libcrashpad%lib{crashpad_snapshot}
+import intf_libs  = libcrashpad%lib{crashpad_snapshot}
 
 common_source =     cpu_context_test \
                     memory_snapshot_test \
@@ -75,17 +75,14 @@ snapshot_test_support_common_source = test/test_cpu_context \
                                       test/test_system_snapshot \
                                       test/test_thread_snapshot
 
-./: exe{crashpad_snapshot_test} lib{snapshot_test_support}
-
 exe{crashpad_snapshot_test}: {hxx}{$common_headers} {cxx}{$common_source}
 exe{crashpad_snapshot_test}: {hxx}{$linux_header} {cxx}{$linux_source} file{elf/test_exported_symbols.sym} file{../util/misc/arm64_pac_bti.S}: include = ($cxx.target.class == 'linux')
 exe{crashpad_snapshot_test}: {cxx}{$macos_source}: include = ($cxx.target.class == 'macos')
 #exe{crashpad_snapshot_test}: {cxx}{$win_source}: include = ($cxx.target.class == 'windows')
 exe{crashpad_snapshot_test}: {cxx}{../test/gtest_main}
-
 exe{crashpad_snapshot_test}: lib{snapshot_test_support} $libs
 
-exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_annotations} exe{crashpad_snapshot_test_crashing_child} exe{crashpad_snapshot_test_dump_without_crashing} exe{crashpad_snapshot_test_extra_memory_ranges} exe{crashpad_snapshot_test_image_reader}:
+exe{crashpad_snapshot_test}: exe{crashpad_snapshot_test_annotations crashpad_snapshot_test_crashing_child crashpad_snapshot_test_dump_without_crashing crashpad_snapshot_test_extra_memory_ranges crashpad_snapshot_test_image_reader}:
 {
   include = ($cxx.target.class == 'windows')
   test.input = true
@@ -101,12 +98,12 @@ exe{crashpad_snapshot_test}: test = true
 
 lib{snapshot_test_support}: {hxx}{$snapshot_test_support_common_header} {cxx}{$snapshot_test_support_common_source} $impl_libs $intf_libs
 
-exe{crashpad_snapshot_test_annotations}: {cxx}{win/crashpad_snapshot_test_annotations} $libs: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test_crashing_child}: {cxx}{win/crashpad_snapshot_test_crashing_child} $libs: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test_dump_without_crashing}: {cxx}{win/crashpad_snapshot_test_dump_without_crashing} $libs: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test_extra_memory_ranges}: {cxx}{win/crashpad_snapshot_test_extra_memory_ranges} $libs: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test_image_reader}: {cxx}{win/crashpad_snapshot_test_image_reader} $libs: include = ($cxx.target.class == 'windows')
-exe{crashpad_snapshot_test_no_op}: {cxx}{mac/mach_o_image_annotations_reader_test_no_op} $libs: include = ($cxx.target.class == 'macos')
+exe{crashpad_snapshot_test_annotations}: {cxx}{win/crashpad_snapshot_test_annotations} $libs
+exe{crashpad_snapshot_test_crashing_child}: {cxx}{win/crashpad_snapshot_test_crashing_child} $libs
+exe{crashpad_snapshot_test_dump_without_crashing}: {cxx}{win/crashpad_snapshot_test_dump_without_crashing} $libs
+exe{crashpad_snapshot_test_extra_memory_ranges}: {cxx}{win/crashpad_snapshot_test_extra_memory_ranges} $libs
+exe{crashpad_snapshot_test_image_reader}: {cxx}{win/crashpad_snapshot_test_image_reader} $libs
+exe{crashpad_snapshot_test_no_op}: {cxx}{mac/mach_o_image_annotations_reader_test_no_op} $libs
 
 cxx.poptions += "-I$src_root"/crashpad-tests
 cxx.poptions += -DCRASHPAD_TEST_LAUNCHER_GOOGLETEST
@@ -116,7 +113,7 @@ switch $cxx.target.class
   case 'linux'
   {
     cxx.libs += -ldl -pthread
-    cxx.loptions += -Wl,--dynamic-list,"$src_root"/crashpad-tests/snapshot/elf/test_exported_symbols.sym
+    cxx.loptions += -Wl,--dynamic-list,"$src_base"/elf/test_exported_symbols.sym
   }
   case 'macos'
   {
@@ -128,26 +125,14 @@ switch $cxx.target.class
   }
 }
 
-enable_assembly = ($cxx.target.class == 'linux')
-if ($enable_assembly)
+for f: elf/elf_image_reader_test_note.S
 {
-    exe{crashpad_snapshot_test}: cxx.coptions += "-mbmi"
-}
-
-switch $cxx.target.class
-{
-  case 'linux'
-    assembly_source = elf/elf_image_reader_test_note.S
-}
-
-for f: $assembly_source
-{
-    obje{$name($f)...a.o}: $f
-    {{
-        diag as $>
-        $cxx.path -o $path($>) -c $path($<[0]) "-I$src_root"/crashpad-tests
-    }}
-    exe{crashpad_snapshot_test}: file{$f} obj{$name($f)}
+  obje{$name($f)...a.o}: $f
+  {{
+    diag as $>
+    $cxx.path "-I$src_root"/crashpad-tests -o $path($>) -c $path($<[0])
+  }}
+  exe{crashpad_snapshot_test}: file{$f} obje{$name($f)}: include = ($cxx.target.class == 'linux')
 }
 
 # snapshot test support export options.
@@ -161,14 +146,14 @@ lib{snapshot_test_support}:
 # TODO Figure out why this fails on linux static builds
 if ($cxx.target.class == 'linux')
 {
-exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+  exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
 ProcessSnapshotSanitized.Sanitize"
 }
 
 # --dynamic-list only works on gcc
 if (($cxx.target.class == 'linux') && ($cxx.id == 'clang'))
 {
-exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+  exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
 ElfImageReader.OneModuleSelf:\
 ElfImageReader.OneModuleChild:\
 ProcessSnapshotSanitized.Sanitize"
@@ -177,7 +162,7 @@ ProcessSnapshotSanitized.Sanitize"
 # TODO figure out why SystemSnapshotWinTest.TimeZone fails
 if ($cxx.target.class == 'windows')
 {
-exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+  exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
 PEImageReader.DebugDirectory:\
 ProcessSnapshotTest.CrashpadInfoChild:\
 SystemSnapshotWinTest.TimeZone:\
@@ -188,7 +173,7 @@ CrashpadInfoSizes_ClientOptions*"
 # Requires more data dependencies which I have skipped for now.
 if ($cxx.target.class == 'macos')
 {
-exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
+  exe{crashpad_snapshot_test}: test.options = "--gtest_filter=-\
 MachOImageAnnotationsReader.CrashModuleInitialization:\
 MachOImageAnnotationsReader.CrashDyld:\
 ProcessReaderMac.SelfModules:\

@@ -567,7 +567,7 @@ switch $cxx.target.class
 # Install into the crashpad/util/ subdirectory of, say, /usr/include/
 # recreating subdirectories.
 #
-{hxx ixx txx}{*}:
+hxx{*}:
 {
   install         = include/crashpad/util/
   install.subdirs = true
