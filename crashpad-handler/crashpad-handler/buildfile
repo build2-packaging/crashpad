@@ -18,7 +18,7 @@ crashpad_handler_exe = ($cxx.target.class == 'windows' ? crashpad_handler.exe : 
 ./: exe{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
 
 exe{$crashpad_handler_exe}: {cxx}{main} $libs
-exe{crashpad_handler.com}: {cxx}{main} $libs
+exe{crashpad_handler.com}: {cxx}{main} $libs: include = ($cxx.target.class == 'windows')
 
 if ($cxx.target.system == 'win32-msvc')
 {
