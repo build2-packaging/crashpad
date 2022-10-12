@@ -16,9 +16,9 @@ impl_libs += ../client/lib{crashpad_client_common}
 impl_libs += ../snapshot/lib{crashpad_snapshot}
 
 handler_intf_libs  = ../client/lib{crashpad_client}
+handler_intf_libs += lib{crashpad_handler_common}
 
-handler_impl_libs  = lib{crashpad_handler_common}
-handler_impl_libs += ../minidump/lib{crashpad_minidump}
+handler_impl_libs  = ../minidump/lib{crashpad_minidump}
 handler_impl_libs += ../tools/lib{crashpad_tool_support}
 
 libcommon_common_headers =  crash_report_upload_thread \
