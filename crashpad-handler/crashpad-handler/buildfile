@@ -13,15 +13,16 @@ if ($cxx.target.class == 'linux')
 }
 
 crashpad_handler_exe = ($cxx.target.class == 'windows' ? crashpad_handler.exe : crashpad_handler)
+crash_handler_com = crash_handler.com
 
 ./: exe{$crashpad_handler_exe}
-./: exe{crashpad_handler.com}: include = ($cxx.target.class == 'windows')
+./: exe{$crash_handler_com}: include = ($cxx.target.class == 'windows')
 
 exe{$crashpad_handler_exe}: {cxx}{main} $libs
-exe{crashpad_handler.com}: {cxx}{main} $libs: include = ($cxx.target.class == 'windows')
+exe{$crash_handler_com}: {cxx}{main} $libs: include = ($cxx.target.class == 'windows')
 
 if ($cxx.target.system == 'win32-msvc')
 {
   exe{$crashpad_handler_exe}: cxx.loptions += '/subsystem:windows'
-  exe{crashpad_handler.com}: cxx.loptions += '/subsystem:console'
+  exe{$crash_handler_com}: cxx.loptions += '/subsystem:console'
 }
