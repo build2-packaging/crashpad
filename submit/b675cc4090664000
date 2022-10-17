@@ -1,0 +1,6 @@
+: 1
+name: crashpad-tests
+version: 0.9.0-a.0.20221017094657.7f5a00c65f5b
+project: crashpad
+summary: Chromium crash-reporting system, tests
+license: Apache-2.0
