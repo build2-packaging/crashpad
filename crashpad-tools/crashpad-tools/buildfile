@@ -1,17 +1,17 @@
-import libs  = mini_chromium%lib{mini_chromium}
-import libs += libcrashpad%lib{crashpad_build}
-import libs += libcrashpad%lib{crashpad_tool_support}
-import libs += libcrashpad%lib{crashpad_util}
-import libs += libcrashpad%lib{crashpad_compat}
+import libs  = mini_chromium%liba{mini_chromium}
+import libs += libcrashpad%liba{crashpad_build}
+import libs += libcrashpad%liba{crashpad_tool_support}
+import libs += libcrashpad%liba{crashpad_util}
+import libs += libcrashpad%liba{crashpad_compat}
 
-import database_util_libs = libcrashpad%lib{crashpad_client}
+import database_util_libs = libcrashpad%liba{crashpad_client}
 
-import http_upload_libs = libcrashpad%lib{crashpad_net}
+import http_upload_libs = libcrashpad%liba{crashpad_net}
 
-import generate_dump_libs  = libcrashpad%lib{crashpad_minidump}
-import generate_dump_libs += libcrashpad%lib{crashpad_snapshot}
+import generate_dump_libs  = libcrashpad%liba{crashpad_minidump}
+import generate_dump_libs += libcrashpad%liba{crashpad_snapshot}
 
-import run_with_crashpad_libs = libcrashpad%lib{crashpad_client}
+import run_with_crashpad_libs = libcrashpad%liba{crashpad_client}
 
 ./: exe{crashpad_database_util crashpad_http_upload base94_encoder generate_dump}
 ./: exe{run_with_crashpad catch_exception_tool exception_port_tool on_demand_service_tool}: include = ($cxx.target.class == 'macos')

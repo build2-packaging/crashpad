@@ -1,15 +1,15 @@
-import libs  = mini_chromium%lib{mini_chromium}
-import libs += libcrashpad%lib{crashpad_build}
-import libs += libcrashpad%lib{crashpad_util}
-import libs += libcrashpad%lib{crashpad_net}
-import libs += libcrashpad%lib{crashpad_client_common}
-import libs += libcrashpad%lib{crashpad_snapshot}
-import libs += libcrashpad%lib{crashpad_handler}
-import libs += libcrashpad%lib{crashpad_compat}
-import libs += libcrashpad%lib{crashpad_tool_support}
+import libs  = mini_chromium%liba{mini_chromium}
+import libs += libcrashpad%liba{crashpad_build}
+import libs += libcrashpad%liba{crashpad_util}
+import libs += libcrashpad%liba{crashpad_net}
+import libs += libcrashpad%liba{crashpad_client_common}
+import libs += libcrashpad%liba{crashpad_snapshot}
+import libs += libcrashpad%liba{crashpad_handler}
+import libs += libcrashpad%liba{crashpad_compat}
+import libs += libcrashpad%liba{crashpad_tool_support}
 if ($cxx.target.class == 'linux')
 {
-  import libs += libcrashpad%lib{crashpad_pthread_create}
+  import libs += libcrashpad%liba{crashpad_pthread_create}
 }
 
 crashpad_handler_exe = ($cxx.target.class == 'windows' ? crashpad_handler.exe : crashpad_handler)
