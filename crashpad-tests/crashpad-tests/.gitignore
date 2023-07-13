@@ -1,5 +1,9 @@
 crashpad-tests
 
+# Test executables.
+#
+*_test
+
 # Testscript output directory (can be symlink).
 #
 test-crashpad-tests
